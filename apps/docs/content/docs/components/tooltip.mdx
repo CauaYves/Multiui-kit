@@ -1,0 +1,59 @@
+---
+title: Tooltip
+description: A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.
+base: base
+component: true
+links:
+  doc: https://base-ui.com/react/components/tooltip
+  api: https://base-ui.com/react/components/tooltip#api-reference
+---
+
+<ComponentPreview name="tooltip-demo" />
+
+## Installation
+
+<Installation name="tooltip" />
+
+## Usage
+
+```tsx showLineNumbers
+```
+
+```tsx showLineNumbers
+<Tooltip>
+  <TooltipTrigger>Hover</TooltipTrigger>
+  <TooltipContent>
+    <p>Add to library</p>
+  </TooltipContent>
+</Tooltip>
+```
+
+## Composition
+
+Use the following composition to build a `Tooltip`:
+
+```text
+Tooltip
+├── TooltipTrigger
+└── TooltipContent
+```
+
+## Side
+
+Use the `side` prop to change the position of the tooltip.
+
+<ComponentPreview name="tooltip-sides" />
+
+## With Keyboard Shortcut
+
+<ComponentPreview name="tooltip-keyboard" />
+
+## Disabled Button
+
+Show a tooltip on a disabled button by wrapping it with a span.
+
+<ComponentPreview name="tooltip-disabled" />
+
+## API Reference
+
+See the [Base UI Tooltip](https://base-ui.com/react/components/tooltip#api-reference) documentation.

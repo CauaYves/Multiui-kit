@@ -1,0 +1,22 @@
+---
+title: Introdução
+description: O kit de UI compartilhado da Multiclubes.
+---
+
+O **Multiui-kit** reúne o que as aplicações da Multiclubes compartilham de interface: componentes React, o tema (cores, tipografia, raios, modo escuro) e as configurações de TypeScript e Biome.
+
+Ele é publicado como pacotes. Uma aplicação instala `@multiclubes/ui`, importa o tema e usa os componentes. Correções e melhorias chegam a todos os projetos com uma atualização de versão.
+
+## Base
+
+Os componentes partem do [shadcn/ui](https://ui.shadcn.com), no estilo `base-luma`:
+
+- **Base UI** para o comportamento acessível (foco, teclado, ARIA);
+- **Tailwind CSS v4** para o estilo, com o tema em CSS variables;
+- **Phosphor** para os ícones.
+
+Os nomes das variáveis do tema seguem o contrato do shadcn/ui (`--primary`, `--background`, `--radius`…). Assim, um tema de cliente sobrescreve as variáveis sem tocar nos componentes.
+
+## Esta documentação
+
+As páginas dos componentes são geradas a partir da documentação do shadcn/ui, com os exemplos apontando para o `@multiclubes/ui`. O conteúdo de cada componente está em inglês, como no original. Veja a [instalação](/docs/installation) para começar e a lista de [componentes](/docs/components).

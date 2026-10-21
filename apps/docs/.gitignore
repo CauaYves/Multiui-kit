@@ -34,3 +34,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# shadcn/ui baixado por scripts/sync-shadcn.mjs
+/.shadcn-upstream

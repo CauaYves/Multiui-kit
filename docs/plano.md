@@ -154,8 +154,7 @@ Definir o que será construído e com que cara. Nada é copiado dos monolitos.
 
 Corrigir o starter e deixar a base pronta para receber componentes.
 
-> **Concluída em 2026-10-21.** Pacotes renomeados para `@multiclubes/*`; `packages/ui` reorganizado em `src/` com `exports` por subpath; Tailwind v4 no kit e nos apps; Biome como única ferramenta de lint/format, com `@multiclubes/biome-config`; Vitest + Testing Library no `ui`; `Button` (shadcn `base-luma`) com testes, renderizado no `web` e no `docs`; CI em GitHub Actions (lint, tipos, testes, build). O registry do shadcn publica componentes com `import { cn } from "cn"`, que o CLI não reescreve; o script `add-component` do `ui` corrige isso.
-
+> **Concluída em 2026-10-21.** Pacotes renomeados para `@multiclubes/*`; `packages/ui` reorganizado em `src/` com `exports` por subpath; Tailwind v4 no kit e nos apps; Biome como única ferramenta de lint/format, com `@multiclubes/biome-config`; Vitest + Testing Library no `ui`; `Button` (shadcn `base-luma`) com testes, renderizado no `web` e no `docs`; CI em GitHub Actions (lint, tipos, testes, build).
 - Renomear raiz e pacotes para o escopo `@multiclubes/*` e alinhar todos os `components.json`.
 - Reorganizar `packages/ui` (`src/components`, `src/lib`, `src/hooks`, `src/styles`) e ajustar `exports` e `tsconfig`.
 - Instalar e configurar Tailwind v4 no `ui` e nos apps internos.
@@ -175,7 +174,9 @@ Corrigir o starter e deixar a base pronta para receber componentes.
 
 **Pronto quando:** o tema padrão reproduz a direção visual, um tema de cliente funciona sem alterar componentes, e ambos estão documentados.
 
-### Fase 3 — Componentes base
+### Fase 3 — Componentes base (em andamento)
+
+> **2026-10-21:** todos os 63 componentes do shadcn/ui (`base-luma`) foram adicionados ao `@multiclubes/ui`, além de dois componentes próprios trazidos do Portal (`DateWheelPicker` e `DateField`, com testes), e o `apps/docs` reproduz a documentação do ui.shadcn.com para eles: 66 páginas e 420 exemplos, gerados por `apps/docs/scripts/sync-shadcn.mjs`. Ainda faltam, por componente: aplicar a direção visual da Fase 2, testes (só o `Button` tem) e verificação de a11y. O conteúdo das páginas de componente está em inglês, como no original.
 
 Começar pelos componentes que o Portal mais usa, segundo a lista da Fase 0. Primeira leva sugerida:
 

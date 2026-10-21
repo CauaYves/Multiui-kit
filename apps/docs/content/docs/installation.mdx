@@ -1,0 +1,52 @@
+---
+title: Instalação
+description: Como adicionar o Multiui-kit a uma aplicação.
+---
+
+## Requisitos
+
+- React 19.2 ou superior;
+- Tailwind CSS v4.
+
+## Instale o pacote
+
+```bash
+pnpm add @multiclubes/ui
+```
+
+## Importe o tema
+
+No CSS global da aplicação, importe o Tailwind e, em seguida, o tema do kit:
+
+```css title="app/globals.css"
+@import "tailwindcss";
+@import "@multiclubes/ui/styles.css";
+```
+
+O tema já declara onde estão os componentes, então o Tailwind gera as classes deles sem configuração extra.
+
+## Next.js
+
+Enquanto o pacote é distribuído como código-fonte, apps Next.js precisam transpilar o kit:
+
+```js title="next.config.js"
+const nextConfig = {
+  transpilePackages: ["@multiclubes/ui"],
+};
+
+export default nextConfig;
+```
+
+## Use os componentes
+
+Cada componente é importado pelo seu caminho:
+
+```tsx
+import { Button } from "@multiclubes/ui/components/button"
+
+export default function Page() {
+  return <Button>Salvar</Button>
+}
+```
+
+Componentes como `Tooltip` e `Toast` precisam de um provider na raiz da aplicação. A página de cada componente indica quando isso é necessário.

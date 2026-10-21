@@ -1,0 +1,46 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.14/schema.json",
+  "root": true,
+  "extends": ["@multiclubes/biome-config/base"],
+  "files": {
+    "includes": [
+      "**",
+      "!**/next-env.d.ts",
+      "!pnpm-lock.yaml",
+      // Gerados por apps/docs/scripts/sync-shadcn.mjs: ficam como no shadcn/ui.
+      "!apps/docs/examples",
+      "!apps/docs/content/sources",
+      "!apps/docs/.shadcn-upstream"
+    ]
+  },
+  "overrides": [
+    {
+      // Componentes vindos do registry do shadcn. Estes padrões são intencionais
+      // no código original (ex.: role="group" em div, Label genérico, <style> do chart,
+      // listas estáticas com índice como key) e desligá-los mantém o código próximo do upstream.
+      "includes": ["packages/ui/src/**"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "noLabelWithoutControl": "off",
+            "noNoninteractiveTabindex": "off",
+            "noRedundantRoles": "off",
+            "useFocusableInteractive": "off",
+            "useKeyWithClickEvents": "off",
+            "useSemanticElements": "off"
+          },
+          "correctness": {
+            "useExhaustiveDependencies": "off"
+          },
+          "security": {
+            "noDangerouslySetInnerHtml": "off"
+          },
+          "suspicious": {
+            "noArrayIndexKey": "off",
+            "noDocumentCookie": "off"
+          }
+        }
+      }
+    }
+  ]
+}

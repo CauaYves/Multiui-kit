@@ -1,0 +1,66 @@
+---
+title: Date Wheel Picker
+description: Seletor de data em rodas de dia, mês e ano, no estilo dos seletores nativos do celular.
+---
+
+<ComponentPreview name="date-wheel-picker-demo" />
+
+## Installation
+
+<Installation name="date-wheel-picker" />
+
+## Usage
+
+```tsx
+import { DateWheelPicker } from "@multiclubes/ui/components/date-wheel-picker"
+```
+
+```tsx
+const [value, setValue] = React.useState("1990-02-01")
+
+<DateWheelPicker value={value} onValueChange={setValue} />
+```
+
+O valor é sempre uma string `yyyy-MM-dd`. Cada coluna rola com scroll-snap e confirma a opção quando a rolagem termina. Pelo teclado, a coluna focada responde a <Kbd>↑</Kbd>, <Kbd>↓</Kbd>, <Kbd>PageUp</Kbd>, <Kbd>PageDown</Kbd>, <Kbd>Home</Kbd> e <Kbd>End</Kbd>.
+
+Dentro de um `Drawer`, arrastar a roda rola as colunas em vez de fechar o drawer. Para o caso mais comum, um campo de formulário que abre a roda no celular, use o [Date Field](/docs/components/date-field).
+
+## Limites
+
+`minDate` e `maxDate` restringem as opções de cada coluna. Ao trocar de mês, o dia é ajustado ao último dia válido (31/01 vira 29/02 em ano bissexto).
+
+<ComponentPreview name="date-wheel-picker-limits" />
+
+## Formato e ordem
+
+`monthFormat` controla o rótulo do mês (`long`, `short` ou `numeric`), `order` a ordem das colunas e `visibleCount` quantas linhas aparecem (3, 5 ou 7).
+
+<ComponentPreview name="date-wheel-picker-format" />
+
+## Desabilitado e com erro
+
+`errors` segue a mesma prop dos outros campos: com mensagens, a faixa central fica destacada e o grupo recebe `aria-invalid`.
+
+<ComponentPreview name="date-wheel-picker-states" />
+
+## Acessibilidade
+
+- O grupo usa `role="group"` com nome acessível (`aria-label`, padrão "Seletor de data").
+- Cada coluna é um `listbox` com `aria-activedescendant` apontando para a opção central.
+- A data escolhida é anunciada por uma região `aria-live`.
+- Com `prefers-reduced-motion`, o alinhamento das colunas não é animado.
+
+## API Reference
+
+| Prop | Tipo | Padrão | Descrição |
+| --- | --- | --- | --- |
+| `value` | `string` | — | Data selecionada (`yyyy-MM-dd`). Omita para uso não controlado. |
+| `defaultValue` | `string` | hoje | Data inicial no modo não controlado. |
+| `onValueChange` | `(value: string) => void` | — | Chamado quando a data muda. |
+| `minDate` | `string` | `"1900-01-01"` | Limite inferior (`yyyy-MM-dd`). |
+| `maxDate` | `string` | hoje | Limite superior (`yyyy-MM-dd`). |
+| `visibleCount` | `3 \| 5 \| 7` | `5` | Linhas visíveis por coluna. |
+| `order` | `("day" \| "month" \| "year")[]` | `["day", "month", "year"]` | Ordem das colunas. |
+| `monthFormat` | `"long" \| "short" \| "numeric"` | `"long"` | Rótulo do mês. |
+| `disabled` | `boolean` | `false` | Desabilita as colunas. |
+| `errors` | `string[]` | — | Mensagens de erro; destacam a faixa central. |

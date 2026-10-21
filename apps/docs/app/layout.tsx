@@ -1,5 +1,9 @@
+import { Toaster } from "@multiclubes/ui/components/toast";
+import { TooltipProvider } from "@multiclubes/ui/components/tooltip";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Toaster as SonnerToaster } from "sonner";
+import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
 const geistSans = localFont({
@@ -12,7 +16,11 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Multiui-kit · Docs",
+  title: {
+    default: "Multiui-kit",
+    template: "%s - Multiui-kit",
+  },
+  description: "Kit de componentes e padrão visual da Multiclubes.",
 };
 
 export default function RootLayout({
@@ -21,8 +29,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body>{children}</body>
+    <html
+      lang="pt-BR"
+      suppressHydrationWarning
+      className={`${geistSans.variable} ${geistMono.variable} [--footer-height:calc(var(--spacing)*14)] [--header-height:calc(var(--spacing)*14)] lg:[--header-height:calc(var(--spacing)*16)]`}
+    >
+      <body>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <TooltipProvider>
+            <Toaster>{children}</Toaster>
+            <SonnerToaster position="top-center" />
+          </TooltipProvider>
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
