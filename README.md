@@ -1,159 +1,57 @@
-# Turborepo starter
+# Multiui-kit
 
-This Turborepo starter is maintained by the Turborepo core team.
+Kit de UI compartilhado da Multiclubes: design tokens, componentes React e configurações comuns, publicados como pacotes para que todas as aplicações sigam o mesmo padrão visual e de código.
 
-## Using this example
+Objetivo, arquitetura e plano de execução: [docs/plano.md](docs/plano.md).
 
-Run the following command:
+## Estrutura
 
-```sh
-npx create-turbo@latest
-```
+| Caminho | Descrição |
+| --- | --- |
+| `packages/ui` | `@multiclubes/ui`: componentes React (shadcn/ui + Base UI) e tema Tailwind v4 |
+| `packages/typescript-config` | `@multiclubes/typescript-config`: tsconfigs compartilhados |
+| `packages/biome-config` | `@multiclubes/biome-config`: configuração base do Biome |
+| `apps/docs` | Catálogo/documentação dos componentes (porta 3001) |
+| `apps/web` | Playground que consome o kit como um app real (porta 3000) |
 
-## What's inside?
+## Desenvolvimento
 
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `@next/eslint-plugin-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+Requisitos: Node.js >= 24 e pnpm 12.
 
 ```sh
-cd my-turborepo
-turbo build
+pnpm install
+pnpm dev            # sobe todos os apps
+pnpm build          # build de todos os pacotes e apps
+pnpm check-types    # verificação de tipos
+pnpm test           # testes (Vitest)
+pnpm lint           # Biome (lint + formatação)
+pnpm lint:fix       # aplica as correções do Biome
 ```
 
-Without global `turbo`, use your package manager:
+Para rodar só um app: `pnpm exec turbo dev --filter=web`.
+
+## Adicionando componentes
+
+Use o script do pacote `ui`, não o `shadcn add` direto:
 
 ```sh
-cd my-turborepo
-npx turbo build
-pnpm exec turbo build
-pnpm exec turbo build
+pnpm --filter @multiclubes/ui add-component dialog
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+O registry do shadcn publica os componentes com `import { cn } from "cn"` e o CLI não reescreve esse import. O script roda o CLI, corrige o import para `@multiclubes/ui/lib/utils` e remove o pacote npm `cn` que o CLI instala.
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+Depois de adicionado, o componente é nosso: ajuste ao padrão do kit, escreva testes (`*.test.tsx` ao lado do componente) e documente no `apps/docs`.
 
-```sh
-turbo build --filter=docs
+## Usando o kit em um app
+
+```css
+/* app/globals.css */
+@import "tailwindcss";
+@import "@multiclubes/ui/styles.css";
 ```
 
-Without global `turbo`:
-
-```sh
-npx turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+```tsx
+import { Button } from "@multiclubes/ui/components/button";
 ```
 
-### Develop
-
-To develop all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo dev
-pnpm exec turbo dev
-pnpm exec turbo dev
-```
-
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo dev --filter=web
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-pnpm exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-pnpm exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+Enquanto o pacote não é publicado (Fase 4), apps Next.js do monorepo precisam de `transpilePackages: ["@multiclubes/ui"]` no `next.config.js`.
