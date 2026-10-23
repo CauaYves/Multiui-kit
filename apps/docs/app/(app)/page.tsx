@@ -14,7 +14,7 @@ export default function Page() {
           {total} componentes
         </span>
         <h1 className="text-4xl leading-tight font-semibold tracking-tight text-balance lg:text-5xl">
-          O kit de UI da Multiclubes
+          Mosaico, o design system da Multiclubes
         </h1>
         <p className="max-w-2xl text-base text-balance text-muted-foreground sm:text-lg">
           Componentes acessíveis, tema compartilhado e configurações comuns para todas as aplicações

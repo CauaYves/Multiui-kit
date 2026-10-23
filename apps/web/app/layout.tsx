@@ -12,7 +12,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Multiui-kit · Playground",
+  title: "Mosaico · Playground",
 };
 
 export default function RootLayout({

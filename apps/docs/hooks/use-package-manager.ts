@@ -4,7 +4,7 @@ import * as React from "react";
 
 type PackageManager = "pnpm" | "npm" | "yarn" | "bun";
 
-const STORAGE_KEY = "multiui-docs:package-manager";
+const STORAGE_KEY = "mosaico-docs:package-manager";
 const listeners = new Set<() => void>();
 
 function read(): PackageManager {

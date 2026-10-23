@@ -1,6 +1,6 @@
-# Multiui-kit
+# Mosaico
 
-Kit de UI compartilhado da Multiclubes: design tokens, componentes React e configurações comuns, publicados como pacotes para que todas as aplicações sigam o mesmo padrão visual e de código.
+Design system da Multiclubes: design tokens, componentes React e configurações comuns, publicados como pacotes (`@multiclubes/*`) para que todas as aplicações sigam o mesmo padrão visual e de código.
 
 Objetivo, arquitetura e plano de execução: [docs/plano.md](docs/plano.md).
 

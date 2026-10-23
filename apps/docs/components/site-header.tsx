@@ -29,7 +29,7 @@ export function SiteHeader() {
             render={<Link href="/" />}
           >
             <LogoMark className="size-5" />
-            <span className="sr-only">Multiui-kit</span>
+            <span className="sr-only">Mosaico</span>
           </Button>
           <MainNav items={NAV_ITEMS} className="hidden lg:flex" />
           <div className="ml-auto flex items-center gap-2 md:flex-1 md:justify-end">

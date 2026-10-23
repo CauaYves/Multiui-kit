@@ -17,10 +17,10 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: {
-    default: "Multiui-kit",
-    template: "%s - Multiui-kit",
+    default: "Mosaico",
+    template: "%s - Mosaico",
   },
-  description: "Kit de componentes e padrão visual da Multiclubes.",
+  description: "Mosaico, o design system da Multiclubes.",
 };
 
 export default function RootLayout({
