@@ -3,8 +3,7 @@
 import { Button } from "@multiclubes/ui/components/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@multiclubes/ui/components/tabs";
 import { CheckIcon, CopyIcon, TerminalIcon } from "@phosphor-icons/react";
-import * as React from "react";
-import { copyToClipboard } from "@/components/copy-button";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { usePackageManager } from "@/hooks/use-package-manager";
 
 export function CodeBlockCommand({
@@ -19,13 +18,7 @@ export function CodeBlockCommand({
   __bun__?: string;
 }) {
   const [packageManager, setPackageManager] = usePackageManager();
-  const [hasCopied, setHasCopied] = React.useState(false);
-
-  React.useEffect(() => {
-    if (!hasCopied) return;
-    const timer = setTimeout(() => setHasCopied(false), 2000);
-    return () => clearTimeout(timer);
-  }, [hasCopied]);
+  const { isCopied, copyToClipboard } = useCopyToClipboard();
 
   const tabs = { pnpm: __pnpm__, npm: __npm__, yarn: __yarn__, bun: __bun__ };
 
@@ -69,13 +62,10 @@ export function CodeBlockCommand({
         size="icon"
         variant="ghost"
         className="absolute top-2 right-2 z-10 size-7 opacity-70 hover:opacity-100 focus-visible:opacity-100"
-        onClick={async () => {
-          const command = tabs[packageManager];
-          if (command && (await copyToClipboard(command))) setHasCopied(true);
-        }}
+        onClick={() => copyToClipboard(tabs[packageManager] ?? "")}
       >
         <span className="sr-only">Copiar</span>
-        {hasCopied ? <CheckIcon /> : <CopyIcon />}
+        {isCopied ? <CheckIcon /> : <CopyIcon />}
       </Button>
     </div>
   );

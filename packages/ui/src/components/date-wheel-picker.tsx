@@ -10,6 +10,7 @@ const FALLBACK_MIN_PARTS: DateParts = { year: 1900, month: 0, day: 1 };
 const DEFAULT_ORDER: DateWheelPart[] = ["day", "month", "year"];
 const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const KEYBOARD_PAGE_STEP = 5;
+const FUTURE_RANGE_YEARS = 100;
 
 // Detecta o fim da rolagem nos navegadores sem o evento `scrollend` (Safari e
 // iOS antigos, o principal alvo deste componente).
@@ -106,6 +107,57 @@ function clampParts(parts: DateParts, min: DateParts, max: DateParts): DateParts
   return parts;
 }
 
+/**
+ * Resolve a faixa da roda. Sem `maxDate`, o teto é hoje (datas de nascimento, o
+ * caso mais comum) — a menos que `minDate` já esteja no futuro, como num
+ * agendamento: aí o teto passa a ser o fim do ano, `FUTURE_RANGE_YEARS` depois.
+ */
+function resolveBounds(minDate: string | undefined, maxDate: string | undefined, today: DateParts) {
+  const min = parseISODate(minDate) ?? FALLBACK_MIN_PARTS;
+  const explicitMax = parseISODate(maxDate);
+  let max = explicitMax ?? today;
+
+  if (compareParts(min, max) > 0) {
+    if (explicitMax && process.env.NODE_ENV !== "production") {
+      console.warn(`DateWheelPicker: minDate (${minDate}) é posterior a maxDate (${maxDate}).`);
+    }
+
+    max = explicitMax ? min : { year: min.year + FUTURE_RANGE_YEARS, month: 11, day: 31 };
+  }
+
+  return { min, max };
+}
+
+/**
+ * Limita uma data "yyyy-MM-dd" à faixa da roda, com os mesmos padrões dela. Data
+ * ausente ou inválida vira hoje, também limitado. É a data que a roda exibe para
+ * esse valor.
+ */
+function clampDateToRange(
+  value: string | undefined,
+  { minDate, maxDate }: { minDate?: string; maxDate?: string } = {},
+) {
+  const today = toDateParts(new Date());
+  const { min, max } = resolveBounds(minDate, maxDate, today);
+
+  return toISODate(clampParts(parseISODate(value) ?? today, min, max));
+}
+
+const subscribeToNothing = () => () => {};
+const getTodayISO = () => toISODate(toDateParts(new Date()));
+const getServerToday = () => null;
+
+/**
+ * Hoje, ou `null` no servidor e durante a hidratação: o "hoje" de quando a página
+ * foi gerada (ou do fuso do servidor) pode não ser o de quem a abre, e renderizar
+ * datas diferentes nos dois lados quebraria a hidratação.
+ */
+function useToday(): DateParts | null {
+  const iso = React.useSyncExternalStore(subscribeToNothing, getTodayISO, getServerToday);
+
+  return iso ? parseISODate(iso) : null;
+}
+
 function buildYearOptions(min: DateParts, max: DateParts): WheelOption[] {
   const options: WheelOption[] = [];
 
@@ -175,12 +227,19 @@ function clampIndex(index: number, length: number) {
 function readItemHeight(list: HTMLElement) {
   const option = list.querySelector<HTMLElement>("[data-slot='date-wheel-picker-option']");
 
-  // `offsetHeight`, não `getBoundingClientRect().height`: as opções carregam
-  // `scale-95` (e `scale-100` só quando selecionadas), e o rect devolve a
-  // altura já transformada. Como o seletor pega a primeira opção — quase nunca
-  // a selecionada —, a medida vinha 5% menor e o erro acumulava por índice:
-  // no dia o negrito caía uma linha abaixo, no ano saía da tela.
-  return option?.offsetHeight ?? 0;
+  if (!option) {
+    return 0;
+  }
+
+  // A altura computada, e não:
+  // - `getBoundingClientRect().height`, que já vem transformada: as opções têm
+  //   `scale-95` (só a selecionada tem `scale-100`), e a medida sairia 5% menor;
+  // - `offsetHeight`, que arredonda para pixel inteiro: com fonte base diferente
+  //   de 16px a linha mede, por exemplo, 49,5px, e o erro de meio pixel acumula
+  //   por índice (no ano 1990, quase uma linha inteira).
+  const height = Number.parseFloat(getComputedStyle(option).height);
+
+  return Number.isFinite(height) ? height : 0;
 }
 
 function prefersReducedMotion() {
@@ -233,10 +292,6 @@ function DateWheelPickerColumn({
   const hasPositionedRef = React.useRef(false);
   const scrollEndTimeoutRef = React.useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  // Impede que uma rolagem iniciada por nós volte como seleção do usuário, o
-  // que entraria em laço com o valor do componente pai.
-  const isSyncingRef = React.useRef(false);
-
   const [activeIndex, setActiveIndex] = React.useState(() =>
     clampIndex(findOptionIndex(options, value), options.length),
   );
@@ -254,16 +309,13 @@ function DateWheelPickerColumn({
       return;
     }
 
-    const target = index * itemHeight;
+    // Nunca além do fim da lista: o navegador limitaria a rolagem de qualquer
+    // forma, e a coluna pararia fora do índice pedido.
+    const target = Math.min(index * itemHeight, list.scrollHeight - list.clientHeight);
 
-    // Já alinhado: rolar não emitiria evento, a marca de sincronização
-    // ficaria presa e o próximo gesto seria engolido.
-    if (Math.abs(list.scrollTop - target) < 1) {
-      return;
+    if (Math.abs(list.scrollTop - target) >= 1) {
+      list.scrollTo({ top: target, behavior });
     }
-
-    isSyncingRef.current = true;
-    list.scrollTo({ top: target, behavior });
   }, []);
 
   const positionToIndex = (node: HTMLDivElement, index: number) => {
@@ -340,11 +392,10 @@ function DateWheelPickerColumn({
 
       setActiveIndex(index);
 
-      if (isSyncingRef.current) {
-        isSyncingRef.current = false;
-        return;
-      }
-
+      // Só emite quando a coluna parou numa opção diferente do valor. Uma rolagem
+      // nossa (alinhar ao valor) termina no próprio valor e não emite nada; um
+      // gesto do usuário, mesmo no meio de uma rolagem nossa, termina em outra
+      // opção e é respeitado.
       const option = options[index];
 
       if (option && option.value !== value) {
@@ -414,7 +465,15 @@ function DateWheelPickerColumn({
       return;
     }
 
-    const nextIndex = getKeyboardIndex(event.key, activeIndex, options.length - 1);
+    // Parte do valor, não do índice destacado: durante a animação de alinhamento
+    // o destaque passa por posições intermediárias, e a próxima tecla repetiria
+    // o mesmo destino.
+    const valueIndex = findOptionIndex(options, value);
+    const nextIndex = getKeyboardIndex(
+      event.key,
+      valueIndex >= 0 ? valueIndex : activeIndex,
+      options.length - 1,
+    );
 
     if (nextIndex === null) {
       return;
@@ -461,11 +520,9 @@ function DateWheelPickerColumn({
           // estilizado como linha de roda.
           role="option"
           aria-selected={option.value === value}
-          // Fora da ordem de tabulação de propósito: o foco é da coluna, que
-          // aponta para cá por `aria-activedescendant`.
-          tabIndex={-1}
+          // Sem tabIndex nem onKeyDown: o foco fica sempre na coluna, que aponta
+          // para cá por `aria-activedescendant`. Clicar numa opção foca a coluna.
           onClick={() => onOptionChange(option.value)}
-          onKeyDown={handleKeyDown}
           className={cn(
             "flex h-(--wheel-item-height) shrink-0 snap-center cursor-default items-center justify-center px-2 text-base whitespace-nowrap tabular-nums opacity-60 transition-[color,opacity,transform]",
             "scale-95 text-muted-foreground",
@@ -490,7 +547,10 @@ interface DateWheelPickerProps
   onValueChange?: (value: string) => void;
   /** Limite inferior em "yyyy-MM-dd". Padrão: "1900-01-01". */
   minDate?: string;
-  /** Limite superior em "yyyy-MM-dd". Padrão: hoje, como no Calendar. */
+  /**
+   * Limite superior em "yyyy-MM-dd". Padrão: hoje — ou, se `minDate` estiver no
+   * futuro, 31/12 de cem anos depois dele.
+   */
   maxDate?: string;
   /** Linhas visíveis por coluna. Ímpar, para haver linha central. Padrão: 5. */
   visibleCount?: 3 | 5 | 7;
@@ -525,14 +585,23 @@ function DateWheelPicker({
   const currentValue = isControlled ? value : uncontrolledValue;
   const hasError = Boolean(errors?.length);
 
-  const min = React.useMemo(() => parseISODate(minDate) ?? FALLBACK_MIN_PARTS, [minDate]);
-  const max = React.useMemo(() => parseISODate(maxDate) ?? toDateParts(new Date()), [maxDate]);
+  // "Hoje" só entra no cálculo sem `maxDate` ou sem um valor válido. Nesses casos,
+  // no servidor e na hidratação a roda fica vazia até o navegador informar a data.
+  const today = useToday();
+  const parsedValue = parseISODate(currentValue);
+  const isWaitingForToday = today === null && (!parseISODate(maxDate) || !parsedValue);
+  const referenceDay = today ?? FALLBACK_MIN_PARTS;
+
+  const { min, max } = React.useMemo(
+    () => resolveBounds(minDate, maxDate, referenceDay),
+    [minDate, maxDate, referenceDay.year, referenceDay.month, referenceDay.day],
+  );
 
   // Valor ilegível ou fora da faixa apenas move as rodas; nunca é emitido,
   // então montar o seletor não suja um formulário por conta própria.
   const selected = React.useMemo(
-    () => clampParts(parseISODate(currentValue) ?? toDateParts(new Date()), min, max),
-    [currentValue, min, max],
+    () => clampParts(parsedValue ?? referenceDay, min, max),
+    [currentValue, min, max, referenceDay.year, referenceDay.month, referenceDay.day],
   );
 
   const dayOptions = React.useMemo(
@@ -617,23 +686,29 @@ function DateWheelPicker({
         )}
       />
 
-      <div
-        data-slot="date-wheel-picker-columns"
-        className="relative flex h-full [mask-image:linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)]"
-      >
-        {order.map((part) => (
-          <DateWheelPickerColumn key={part} disabled={disabled} {...columns[part]} />
-        ))}
-      </div>
+      {!isWaitingForToday && (
+        <>
+          <div
+            data-slot="date-wheel-picker-columns"
+            className="relative flex h-full [mask-image:linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)]"
+          >
+            {order.map((part) => (
+              <DateWheelPickerColumn key={part} disabled={disabled} {...columns[part]} />
+            ))}
+          </div>
 
-      {/* Anuncia o resultado da rolagem para leitores de tela. */}
-      <output aria-live="polite" className="sr-only">
-        {format(new Date(selected.year, selected.month, selected.day), "d 'de' MMMM 'de' yyyy", {
-          locale: ptBR,
-        })}
-      </output>
+          {/* Anuncia o resultado da rolagem para leitores de tela. */}
+          <output aria-live="polite" className="sr-only">
+            {format(
+              new Date(selected.year, selected.month, selected.day),
+              "d 'de' MMMM 'de' yyyy",
+              { locale: ptBR },
+            )}
+          </output>
+        </>
+      )}
     </div>
   );
 }
 
-export { DateWheelPicker, type DateWheelPickerProps };
+export { clampDateToRange, DateWheelPicker, type DateWheelPickerProps };

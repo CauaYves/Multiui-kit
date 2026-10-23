@@ -56,6 +56,50 @@ describe("DateField", () => {
     expect(input).toHaveValue("16/03/2024");
   });
 
+  it("no modo drawer, o Ok grava a data limitada que a roda mostra", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(
+      <ControlledDateField
+        mode="drawer"
+        value="15/03/2027"
+        maxDate="2025-12-31"
+        onChange={onChange}
+      />,
+    );
+
+    await user.click(screen.getByRole("textbox", { name: "Data de nascimento" }));
+    const dialog = await screen.findByRole("dialog");
+    expect(within(dialog).getByRole("listbox", { name: "Ano" })).toHaveTextContent("2025");
+    await user.click(within(dialog).getByRole("button", { name: "Ok" }));
+
+    expect(onChange).toHaveBeenCalledWith("31/12/2025");
+  });
+
+  it("no modo drawer, required bloqueia o envio sem data", () => {
+    const { container, rerender } = render(
+      <form>
+        <DateField mode="drawer" name="nascimento" required value="" onChange={() => {}} />
+      </form>,
+    );
+    const form = container.querySelector("form") as HTMLFormElement;
+    expect(form.checkValidity()).toBe(false);
+
+    rerender(
+      <form>
+        <DateField
+          mode="drawer"
+          name="nascimento"
+          required
+          value="01/02/1990"
+          onChange={() => {}}
+        />
+      </form>,
+    );
+    expect(form.checkValidity()).toBe(true);
+    expect(new FormData(form).get("nascimento")).toBe("01/02/1990");
+  });
+
   it("com id, deixa o nome acessível para o <label>", () => {
     render(
       <>

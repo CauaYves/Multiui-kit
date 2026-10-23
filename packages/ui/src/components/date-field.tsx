@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@multiclubes/ui/components/button";
-import { DateWheelPicker } from "@multiclubes/ui/components/date-wheel-picker";
+import { clampDateToRange, DateWheelPicker } from "@multiclubes/ui/components/date-wheel-picker";
 import {
   Drawer,
   DrawerContent,
@@ -23,7 +23,6 @@ import * as React from "react";
 
 const DISPLAY_FORMAT = "dd/MM/yyyy";
 const ISO_FORMAT = "yyyy-MM-dd";
-const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const DATE_MASK = "__/__/____";
 
 /** "dd/MM/yyyy" para "yyyy-MM-dd". Valor incompleto ou inválido vira "". */
@@ -42,18 +41,13 @@ function toDisplayDate(value: string) {
 /**
  * Converte o valor do campo para o rascunho da roda.
  *
- * Sem data — ou com uma incompleta, como o valor parcial da máscara — o rascunho
- * ainda precisa começar numa data real: é ela que o "Ok" grava se o usuário
- * confirmar sem rolar nada. Por isso o fallback repete o limite que a roda aplica.
+ * O rascunho é sempre a data que a roda vai exibir — é ela que o "Ok" grava se o
+ * usuário confirmar sem rolar nada. Por isso passa pelo mesmo limite da roda: sem
+ * data (ou com uma incompleta, como o valor parcial da máscara) vira hoje, e uma
+ * data fora de `minDate`/`maxDate` vira o limite mais próximo.
  */
 function toDraftValue(value: string, minDate?: string, maxDate?: string) {
-  const iso = toISODate(value);
-  if (ISO_DATE_PATTERN.test(iso)) return iso;
-
-  const today = format(new Date(), ISO_FORMAT);
-  if (minDate && today < minDate) return minDate;
-  if (maxDate && today > maxDate) return maxDate;
-  return today;
+  return clampDateToRange(toISODate(value) || undefined, { minDate, maxDate });
 }
 
 interface DateFieldProps
@@ -111,6 +105,7 @@ function DateField({
 
   const [open, setOpen] = React.useState(false);
   const [draft, setDraft] = React.useState(() => toDraftValue(value, minDate, maxDate));
+  const displayInputRef = React.useRef<HTMLInputElement>(null);
 
   if (!useDrawer) {
     return (
@@ -153,10 +148,30 @@ function DateField({
     onBlur?.();
   };
 
+  // O campo visível é somente leitura, e o navegador não valida campos somente
+  // leitura: `required` seria ignorado. Nome e obrigatoriedade vão para um input
+  // invisível sobre o campo, que participa do formulário e da validação nativa.
+  const { name, required, ...displayInputProps } = inputProps;
+
   return (
     <Drawer open={open} onOpenChange={handleOpenChange}>
       <InputGroup data-slot="date-field" className={className}>
+        <input
+          tabIndex={-1}
+          aria-hidden="true"
+          name={name}
+          required={required}
+          disabled={disabled}
+          value={value}
+          // Somente o campo visível altera o valor.
+          onChange={() => {}}
+          // A validação nativa foca o primeiro campo inválido; o foco vai para o visível.
+          onFocus={() => displayInputRef.current?.focus()}
+          className="pointer-events-none absolute inset-0 opacity-0"
+        />
         <InputGroupInput
+          ref={displayInputRef}
+          aria-required={required || undefined}
           placeholder="dd/mm/aaaa"
           aria-label={accessibleLabel}
           value={value}
@@ -175,7 +190,7 @@ function DateField({
             event.preventDefault();
             openDrawer();
           }}
-          {...inputProps}
+          {...displayInputProps}
         />
         <InputGroupAddon align="inline-end" onClick={openDrawer}>
           <CalendarBlankIcon />

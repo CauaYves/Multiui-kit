@@ -1,7 +1,6 @@
 import { ComponentPreviewTabs } from "@/components/component-preview-tabs";
 import { ComponentSource } from "@/components/component-source";
-import { Examples } from "@/examples/__index__";
-import { MulticlubesExamples } from "@/examples-multiclubes";
+import { getExample } from "@/lib/examples";
 
 export async function ComponentPreview({
   name,
@@ -37,7 +36,7 @@ export async function ComponentPreview({
     );
   }
 
-  const load = Examples[name] ?? MulticlubesExamples[name];
+  const load = getExample(name);
   if (!load) {
     return (
       <p className="mt-6 text-sm text-muted-foreground">
