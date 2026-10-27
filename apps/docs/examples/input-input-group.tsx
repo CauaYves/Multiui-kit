@@ -1,0 +1,28 @@
+"use client" // sync-shadcn
+
+import { InfoIcon } from "lucide-react"
+
+import { Field, FieldLabel } from "@multiclubes/ui/components/field"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupText,
+} from "@multiclubes/ui/components/input-group"
+
+export function InputInputGroup() {
+  return (
+    <Field>
+      <FieldLabel htmlFor="input-group-url">Website URL</FieldLabel>
+      <InputGroup>
+        <InputGroupInput id="input-group-url" placeholder="example.com" />
+        <InputGroupAddon>
+          <InputGroupText>https://</InputGroupText>
+        </InputGroupAddon>
+        <InputGroupAddon align="inline-end">
+          <InfoIcon />
+        </InputGroupAddon>
+      </InputGroup>
+    </Field>
+  )
+}

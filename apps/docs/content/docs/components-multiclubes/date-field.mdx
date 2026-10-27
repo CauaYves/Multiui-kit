@@ -1,0 +1,66 @@
+---
+title: Date Field
+description: Campo de data responsivo. No celular abre a roda de dia, mês e ano; no desktop é um campo com máscara.
+---
+
+<ComponentPreview name="date-field-demo" />
+
+## Installation
+
+<Installation name="date-field" />
+
+## Usage
+
+```tsx
+import { DateField } from "@multiclubes/ui/components/date-field"
+import { Field, FieldLabel } from "@multiclubes/ui/components/field"
+```
+
+```tsx
+const [birthDate, setBirthDate] = React.useState("")
+
+<Field>
+  <FieldLabel htmlFor="birth-date">Data de nascimento</FieldLabel>
+  <DateField
+    id="birth-date"
+    label="Data de nascimento"
+    value={birthDate}
+    onChange={setBirthDate}
+  />
+</Field>
+```
+
+O valor do campo é uma string `dd/MM/yyyy`, que pode estar incompleta enquanto é digitada. A validação (data válida, faixa permitida) fica com o formulário.
+
+## Como funciona
+
+- **Desktop (768px ou mais):** com teclado, digitar `01021990` é mais rápido que rolar três colunas. O campo vira um input com máscara `dd/mm/aaaa`.
+- **Celular:** o campo é somente leitura e abre um drawer com o [Date Wheel Picker](/docs/components/date-wheel-picker). A roda mexe num rascunho: só o botão **Ok** grava o valor, então fechar o drawer descarta a escolha.
+
+`minDate` e `maxDate` valem só para a roda. O campo digitável aceita qualquer data.
+
+## Drawer
+
+`mode="drawer"` força a roda em qualquer tela (e `mode="input"` força o campo digitável). O exemplo abaixo mostra o comportamento do celular.
+
+<ComponentPreview name="date-field-drawer" />
+
+## Invalid
+
+Use `aria-invalid` no campo e `data-invalid` no `Field` para exibir o erro.
+
+<ComponentPreview name="date-field-invalid" />
+
+## API Reference
+
+| Prop | Tipo | Padrão | Descrição |
+| --- | --- | --- | --- |
+| `value` | `string` | — | Valor em `dd/MM/yyyy`. |
+| `onChange` | `(value: string) => void` | — | Chamado a cada alteração (digitação ou Ok da roda). |
+| `onBlur` | `() => void` | — | Chamado ao sair do campo ou fechar o drawer. |
+| `label` | `string` | `"Data"` | Título do drawer. Sem `id`, também é o nome acessível do campo. |
+| `minDate` | `string` | — | Limite inferior da roda (`yyyy-MM-dd`). |
+| `maxDate` | `string` | hoje | Limite superior da roda (`yyyy-MM-dd`). |
+| `mode` | `"auto" \| "drawer" \| "input"` | `"auto"` | `auto` usa a roda abaixo de 768px. |
+| `disabled` | `boolean` | `false` | Desabilita o campo. |
+| `id`, `name`, `placeholder`, `required`, `aria-invalid`, `aria-describedby` | — | — | Repassadas ao `<input>`. |

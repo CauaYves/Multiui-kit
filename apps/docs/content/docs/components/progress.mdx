@@ -1,0 +1,62 @@
+---
+title: Progress
+description: Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.
+base: base
+component: true
+links:
+  doc: https://base-ui.com/react/components/progress
+  api: https://base-ui.com/react/components/progress#api-reference
+---
+
+<ComponentPreview name="progress-demo" />
+
+## Installation
+
+<Installation name="progress" />
+
+## Usage
+
+```tsx showLineNumbers
+```
+
+```tsx showLineNumbers
+<Progress value={33} />
+```
+
+## Composition
+
+### With label and value
+
+Use `ProgressLabel` and `ProgressValue` to add a label and value display.
+
+```tsx showLineNumbers
+
+;<Progress value={56} className="w-full max-w-sm">
+  <ProgressLabel>Upload progress</ProgressLabel>
+  <ProgressValue />
+</Progress>
+```
+
+```text
+Progress
+├── ProgressLabel
+├── ProgressValue
+└── ProgressTrack
+    └── ProgressIndicator
+```
+
+## Label
+
+Use `ProgressLabel` and `ProgressValue` to add a label and value display.
+
+<ComponentPreview name="progress-label" />
+
+## Controlled
+
+A progress bar that can be controlled by a slider.
+
+<ComponentPreview name="progress-controlled" />
+
+## API Reference
+
+See the [Base UI Progress](https://base-ui.com/react/components/progress#api-reference) documentation.

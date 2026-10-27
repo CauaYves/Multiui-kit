@@ -1,0 +1,48 @@
+---
+title: Scroll Area
+description: Augments native scroll functionality for custom, cross-browser styling.
+base: base
+component: true
+links:
+  doc: https://base-ui.com/react/components/scroll-area
+  api: https://base-ui.com/react/components/scroll-area#api-reference
+---
+
+<ComponentPreview
+  name="scroll-area-demo"
+  previewClassName="h-96"
+/>
+
+## Installation
+
+<Installation name="scroll-area" />
+
+## Usage
+
+```tsx showLineNumbers
+```
+
+```tsx showLineNumbers
+<ScrollArea className="h-[200px] w-[350px] rounded-md border p-4">
+  Your scrollable content here.
+</ScrollArea>
+```
+
+## Composition
+
+Use the following composition to build a `ScrollArea`:
+
+```text
+ScrollArea
+└── ScrollBar
+```
+
+## Horizontal
+
+Use `ScrollBar` with `orientation="horizontal"` for horizontal scrolling.
+
+<ComponentPreview name="scroll-area-horizontal-demo" />
+
+## API Reference
+
+See the [Base UI Scroll Area](https://base-ui.com/react/components/scroll-area#api-reference) documentation.

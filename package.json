@@ -1,5 +1,5 @@
 {
-  "name": "multiui-kit",
+  "name": "mosaico",
   "private": true,
   "scripts": {
     "build": "turbo run build",

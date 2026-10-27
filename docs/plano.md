@@ -1,4 +1,4 @@
-# Multiui-kit — Visão e plano
+# Mosaico — Visão e plano
 
 > Status: rascunho · Última atualização: 2026-10-21
 
@@ -14,7 +14,7 @@ Isso gera alguns problemas:
 
 ## 2. Objetivo
 
-Criar o **Multiui-kit**: um monorepo que concentra o que é compartilhável entre as aplicações da Multiclubes e o publica como pacotes versionados.
+Criar o **Mosaico**, o design system da Multiclubes: um monorepo que concentra o que é compartilhável entre as aplicações da Multiclubes e o publica como pacotes versionados.
 
 Objetivos concretos:
 
@@ -27,7 +27,7 @@ Objetivos concretos:
 ### Fora do escopo (por enquanto)
 
 - **Copiar ou extrair componentes dos monolitos.** Os componentes são escritos do zero neste repositório, com o estilo próprio do kit. Os monolitos servem apenas como referência de *quais* componentes são necessários e de quais restrições técnicas precisam ser respeitadas (ver [seção 3.1](#31-restrições-vindas-do-portal)).
-- Juntar os dois monolitos em um único repositório.
+- Juntar os apps num workspace (monorepo JavaScript). Esse é o objetivo **futuro**, descrito na [seção 10](#10-objetivo-futuro-workspace-dos-apps-frontend); agora o foco é terminar o kit.
 - Compartilhar regras de negócio, chamadas de API ou estado global. O kit é só de **UI e configuração**.
 - Reescrever telas inteiras. A adoção é incremental, componente por componente.
 
@@ -69,7 +69,7 @@ O kit não reaproveita código do Portal, mas precisa encaixar nele. A stack atu
 
 ```mermaid
 flowchart LR
-  subgraph kit[Multiui-kit monorepo]
+  subgraph kit[Mosaico monorepo]
     tokens[styles / tokens]
     ui["@multiclubes/ui"]
     cfg["@multiclubes/typescript-config<br/>@multiclubes/biome-config"]
@@ -143,9 +143,9 @@ Pontos de atenção no build (modelo A):
 Definir o que será construído e com que cara. Nada é copiado dos monolitos.
 
 - Definir a direção visual do kit: paleta, tipografia, raios, densidade, tom dos estados (hover, foco, erro), modo escuro.
-- Listar os componentes que o Portal e o segundo monolito usam, para saber **quais** construir e em que ordem (só a lista, não o código).
+- Listar os componentes que o Portal e o WebCheckout usam, para saber **quais** construir e em que ordem (só a lista, não o código).
 - Mapear o contrato de variáveis que os temas de cliente do Portal sobrescrevem, para que o kit o respeite.
-- Levantar a stack do segundo monolito (a do Portal está na [seção 3.1](#31-restrições-vindas-do-portal)).
+- Levantar a stack do WebCheckout (a do Portal está na [seção 3.1](#31-restrições-vindas-do-portal)).
 - Responder as [decisões em aberto](#8-decisões-em-aberto).
 
 **Pronto quando:** a direção visual está definida, a lista de componentes está priorizada e as decisões de registry e escopo estão tomadas.
@@ -154,8 +154,7 @@ Definir o que será construído e com que cara. Nada é copiado dos monolitos.
 
 Corrigir o starter e deixar a base pronta para receber componentes.
 
-> **Concluída em 2026-10-21.** Pacotes renomeados para `@multiclubes/*`; `packages/ui` reorganizado em `src/` com `exports` por subpath; Tailwind v4 no kit e nos apps; Biome como única ferramenta de lint/format, com `@multiclubes/biome-config`; Vitest + Testing Library no `ui`; `Button` (shadcn `base-luma`) com testes, renderizado no `web` e no `docs`; CI em GitHub Actions (lint, tipos, testes, build). O registry do shadcn publica componentes com `import { cn } from "cn"`, que o CLI não reescreve; o script `add-component` do `ui` corrige isso.
-
+> **Concluída em 2026-10-21.** Pacotes renomeados para `@multiclubes/*`; `packages/ui` reorganizado em `src/` com `exports` por subpath; Tailwind v4 no kit e nos apps; Biome como única ferramenta de lint/format, com `@multiclubes/biome-config`; Vitest + Testing Library no `ui`; `Button` (shadcn `base-luma`) com testes, renderizado no `web` e no `docs`; CI em GitHub Actions (lint, tipos, testes, build).
 - Renomear raiz e pacotes para o escopo `@multiclubes/*` e alinhar todos os `components.json`.
 - Reorganizar `packages/ui` (`src/components`, `src/lib`, `src/hooks`, `src/styles`) e ajustar `exports` e `tsconfig`.
 - Instalar e configurar Tailwind v4 no `ui` e nos apps internos.
@@ -175,7 +174,9 @@ Corrigir o starter e deixar a base pronta para receber componentes.
 
 **Pronto quando:** o tema padrão reproduz a direção visual, um tema de cliente funciona sem alterar componentes, e ambos estão documentados.
 
-### Fase 3 — Componentes base
+### Fase 3 — Componentes base (em andamento)
+
+> **2026-10-21:** todos os 63 componentes do shadcn/ui (`base-luma`) foram adicionados ao `@multiclubes/ui`, além de dois componentes próprios trazidos do Portal (`DateWheelPicker` e `DateField`, com testes), e o `apps/docs` reproduz a documentação do ui.shadcn.com para eles: 66 páginas e 420 exemplos, gerados por `apps/docs/scripts/sync-shadcn.mjs`. Ainda faltam, por componente: aplicar a direção visual da Fase 2, testes (só o `Button` tem) e verificação de a11y. O conteúdo das páginas de componente está em inglês, como no original.
 
 Começar pelos componentes que o Portal mais usa, segundo a lista da Fase 0. Primeira leva sugerida:
 
@@ -209,7 +210,7 @@ Para cada componente:
 
 **Pronto quando:** os componentes base do Portal vêm do kit, os temas de cliente funcionam e não há regressões relevantes.
 
-### Fase 6 — Adoção no segundo monolito
+### Fase 6 — Adoção no WebCheckout
 
 - Repetir o processo da Fase 5, já com a API amadurecida pelo piloto.
 - Publicar `1.0.0`.
@@ -251,7 +252,7 @@ Para cada componente:
 | --- | --- | --- | --- |
 | 1 | Registry de publicação | Azure Artifacts, GitHub Packages, npm (org privada) | Azure Artifacts, já que o Portal está no Azure DevOps |
 | 2 | Escopo dos pacotes | `@multiclubes/*`, outro | `@multiclubes/*` |
-| 3 | Estratégia de estilo | Tailwind v4 + CSS variables, CSS compilado, ambos | Tailwind v4 (o Portal já usa); confirmar no segundo monolito |
+| 3 | Estratégia de estilo | Tailwind v4 + CSS variables, CSS compilado, ambos | Tailwind v4 (o Portal já usa); o WebCheckout também usa |
 | 4 | Ferramenta do catálogo | `apps/docs` (Next + MDX), Storybook | Definir após a Fase 0 conforme a necessidade de testes visuais |
 | 5 | Onde o repositório do kit vai morar | GitHub pessoal (atual), Azure DevOps da Multiclubes | Azure DevOps, junto com o registry e as pipelines |
 | 6 | Donos do kit | — | — |
@@ -267,3 +268,63 @@ Para cada componente:
 - Percentual de telas usando componentes do kit.
 - Tempo para iniciar uma nova aplicação com o padrão visual completo.
 - Tempo entre uma correção no kit e sua chegada nos dois projetos.
+
+## 10. Objetivo futuro: workspace dos apps frontend
+
+> Registrado em 2026-10-22. **Não é o foco agora:** primeiro o kit fica pronto (fases 2 a 4) e é adotado pelo Portal. Esta seção guarda a direção para depois.
+
+### Situação atual
+
+Os apps frontend da Multiclubes já estão no mesmo repositório, o `MultiClubes/Code` (Azure DevOps), majoritariamente .NET, em `Applications/`. Cada app tem o próprio `package-lock.json`, sem workspace JavaScript ligando os apps:
+
+| App | Next | React | UI | Variáveis de ambiente usadas |
+| --- | --- | --- | --- | --- |
+| Portal | 16.3 | 19.2 | shadcn (Radix) + Tailwind v4 | `KERNEL_URL`, `AUTH_KEY`, `COOKIE_SECRET`, `NEXT_PUBLIC_CUSTOMER`, `NEXT_PUBLIC_THEME`, `SEO_*` |
+| WebCheckout | 15.5 | 19.2 | shadcn (Radix) + Tailwind v4 | `API_URL`, `COOKIE_SECRET`, `NEXT_PUBLIC_CUSTOMER`, `NEXT_PUBLIC_THEME`, `NEXT_PUBLIC_MULTICLUBES_HUB_URL` |
+| Dashboard | 15.5 | 19.1 | MUI 7 + Emotion | `KERNEL_URL`, `AUTH_KEY`, `SESSION_SECRET`, `NEXT_PUBLIC_CUSTOMER`, `DASHBOARD_*`, `APP_*` |
+| PhotoCapture | — | 19 | — | — |
+
+Os três apps Next já usam Turbopack e `output: "standalone"`.
+
+### Objetivo
+
+Um workspace **pnpm + Turborepo na raiz do `Code`**, cobrindo os apps JavaScript de `Applications/` e uma pasta de pacotes compartilhados (kit de UI e configurações). Os apps **não** saem do `Code`.
+
+**Ganhos esperados**
+
+- Mudança no kit e nos apps no mesmo PR, com `check-types` acusando o que quebrou.
+- Versões de React, Next, Tailwind e TypeScript declaradas uma vez (catálogo do pnpm).
+- CI seletiva (`turbo run build --affected`) e cache de tarefas, inclusive remoto.
+- Instalação mais rápida e menos disco: o pnpm guarda cada versão de pacote uma vez só.
+
+**O que não muda:** consumo de RAM. Cada `next dev` continua sendo um processo próprio; o ganho é em disco, instalação e CI.
+
+### Configuração compartilhada (`.env`)
+
+- Um arquivo comum, por ambiente, com o que é de fato compartilhado: `KERNEL_URL`, `AUTH_KEY` (se for a mesma credencial), `NEXT_PUBLIC_CUSTOMER`, `NEXT_PUBLIC_THEME`. Cada app carrega o arquivo comum no `next.config` (`loadEnvConfig`), e o `.env` do próprio app tem precedência.
+- **Segredos de cookie e sessão continuam por app** (`COOKIE_SECRET`, `SESSION_SECRET`): compartilhá-los faria um cookie de um app valer no outro.
+- Em produção, o equivalente é um *Variable Group* do Azure DevOps ligado às pipelines dos apps.
+- Pendente: confirmar se o `API_URL` do WebCheckout é o mesmo serviço do `KERNEL_URL`.
+
+### Etapas
+
+1. **Pré-requisitos (podem começar já):** WebCheckout e Dashboard no Next 16 e React 19.2, e TypeScript alinhado. No WebCheckout, `middleware.ts` vira `proxy.ts` e as APIs de request (`cookies()`, `headers()`, `params`) passam a ser assíncronas.
+2. **Kit pronto e publicado** (fases 2 a 4) e adotado pelo Portal (fase 5).
+3. **Workspace no `Code`** com Portal e WebCheckout: migração de npm para pnpm (corrigir imports de pacotes não declarados), `turbo.json` com as variáveis de ambiente declaradas para o cache, pipelines fazendo o build a partir da raiz (`turbo prune` para Docker, `outputFileTracingRoot` no `standalone`).
+4. **Dashboard e PhotoCapture** entram depois. No Dashboard, a troca de MUI pelo kit é um projeto à parte (conflito entre o reset do Tailwind e o `CssBaseline` do MUI).
+
+### Riscos
+
+| Risco | Mitigação |
+| --- | --- |
+| Migrar tudo de uma vez e quebrar os builds | Um app por vez, começando pelo Portal |
+| Kit ainda instável afetando todos os apps no mesmo commit | Só montar o workspace depois que a API e o visual do kit assentarem |
+| Ninguém responsável pela infraestrutura JavaScript num repositório .NET | Definir os donos antes da etapa 3 |
+| Cache do Turborepo reaproveitando build com outro `.env` | Declarar as variáveis em `env` / `globalEnv` no `turbo.json` |
+
+### Consumo de memória (independente do workspace)
+
+Medidas para avaliar com medição antes e depois:
+
+- **Desenvolvimento:** abrir no editor só a pasta do app (não o `Code` inteiro); subir só o app em uso; `experimental.optimizePackageImports: ["@phosphor-icons/react"]` (o Next não otimiza o Phosphor por padrão, e ele é a biblioteca de ícones do kit e do Dashboard); TypeScript 7 nativo no editor.
+- **Produção:** `experimental.preloadEntriesOnStart: false` (padrão `true` no Next 16.3), `cacheMaxMemorySize` e `experimental.imgOptConcurrency`. No Portal, que roda uma instância por cliente, a economia se multiplica.

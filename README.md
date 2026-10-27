@@ -1,6 +1,6 @@
-# Multiui-kit
+# Mosaico
 
-Kit de UI compartilhado da Multiclubes: design tokens, componentes React e configurações comuns, publicados como pacotes para que todas as aplicações sigam o mesmo padrão visual e de código.
+Design system da Multiclubes: design tokens, componentes React e configurações comuns, publicados como pacotes (`@multiclubes/*`) para que todas as aplicações sigam o mesmo padrão visual e de código.
 
 Objetivo, arquitetura e plano de execução: [docs/plano.md](docs/plano.md).
 
@@ -11,7 +11,7 @@ Objetivo, arquitetura e plano de execução: [docs/plano.md](docs/plano.md).
 | `packages/ui` | `@multiclubes/ui`: componentes React (shadcn/ui + Base UI) e tema Tailwind v4 |
 | `packages/typescript-config` | `@multiclubes/typescript-config`: tsconfigs compartilhados |
 | `packages/biome-config` | `@multiclubes/biome-config`: configuração base do Biome |
-| `apps/docs` | Catálogo/documentação dos componentes (porta 3001) |
+| `apps/docs` | Documentação dos componentes, no formato do ui.shadcn.com (porta 3001) |
 | `apps/web` | Playground que consome o kit como um app real (porta 3000) |
 
 ## Desenvolvimento
@@ -30,17 +30,31 @@ pnpm lint:fix       # aplica as correções do Biome
 
 Para rodar só um app: `pnpm exec turbo dev --filter=web`.
 
-## Adicionando componentes
+## Componentes
 
-Use o script do pacote `ui`, não o `shadcn add` direto:
+O `@multiclubes/ui` traz todos os componentes do shadcn/ui no estilo `base-luma` (Base UI + Phosphor). Para adicionar ou atualizar um componente, rode o CLI dentro de `packages/ui`:
 
 ```sh
-pnpm --filter @multiclubes/ui add-component dialog
+cd packages/ui
+pnpm dlx shadcn@4.22.1 add dialog --overwrite
+pnpm lint:fix   # na raiz: aplica a formatação do repositório
 ```
 
-O registry do shadcn publica os componentes com `import { cn } from "cn"` e o CLI não reescreve esse import. O script roda o CLI, corrige o import para `@multiclubes/ui/lib/utils` e remove o pacote npm `cn` que o CLI instala.
+Os componentes importam `cn` do pacote [`cn`](https://github.com/shadcn-ui/cn), o utilitário oficial do shadcn (substitui `clsx` + `tailwind-merge`). Apps também podem importá-lo de `@multiclubes/ui/lib/utils`.
 
-Depois de adicionado, o componente é nosso: ajuste ao padrão do kit, escreva testes (`*.test.tsx` ao lado do componente) e documente no `apps/docs`.
+Depois de adicionado, o componente é nosso: ajuste ao padrão do kit e escreva testes (`*.test.tsx` ao lado do componente).
+
+Além dos componentes do shadcn, o kit tem componentes próprios da Multiclubes, trazidos do Portal: `date-wheel-picker` (roda de dia/mês/ano) e `date-field` (campo de data que usa a roda no celular e máscara no desktop). Na documentação, eles ficam em `apps/docs/content/docs/components-multiclubes` e `apps/docs/examples-multiclubes`, fora das pastas geradas pelo sync.
+
+## Documentação
+
+`apps/docs` reproduz a documentação do [ui.shadcn.com](https://ui.shadcn.com) para os componentes do kit. As páginas (`content/docs/components`) e os exemplos (`examples/`) são gerados a partir do repositório do shadcn/ui (MIT):
+
+```sh
+pnpm --filter docs sync:shadcn
+```
+
+O script baixa a documentação, troca os imports para `@multiclubes/ui`, substitui a seção de instalação e descarta exemplos que dependem de código interno do site do shadcn (o resumo lista quais e por quê). Não edite os arquivos gerados; as páginas próprias (`content/docs/index.mdx`, `installation.mdx`) são mantidas à mão.
 
 ## Usando o kit em um app
 

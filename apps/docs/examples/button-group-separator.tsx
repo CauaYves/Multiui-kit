@@ -1,0 +1,21 @@
+"use client" // sync-shadcn
+
+import { Button } from "@multiclubes/ui/components/button"
+import {
+  ButtonGroup,
+  ButtonGroupSeparator,
+} from "@multiclubes/ui/components/button-group"
+
+export default function ButtonGroupSeparatorDemo() {
+  return (
+    <ButtonGroup>
+      <Button variant="secondary" size="sm">
+        Copy
+      </Button>
+      <ButtonGroupSeparator />
+      <Button variant="secondary" size="sm">
+        Paste
+      </Button>
+    </ButtonGroup>
+  )
+}
