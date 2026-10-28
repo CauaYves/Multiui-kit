@@ -1,0 +1,83 @@
+---
+title: Por que um design system
+description: De onde veio o Mosaico, por que a Multiclubes precisa de um design system e o que ele já entregou.
+---
+
+## O ponto de partida
+
+A Multiclubes mantém dois projetos em Next.js estruturados como monolitos, o **Portal** e o **WebCheckout**. Cada um tem a própria cópia de botões, inputs, cards, modais e tabelas, e das configurações de TypeScript, lint, Tailwind e fontes.
+
+Enquanto os projetos eram poucos e novos, isso era barato. Com o tempo, os mesmos componentes passaram a evoluir de formas diferentes em cada lugar. O usuário percebe: os produtos deixam de parecer da mesma empresa.
+
+## A inspiração
+
+O Mosaico junta três referências, cada uma responsável por uma parte do problema.
+
+| Referência | O que ela resolve no Mosaico |
+| --- | --- |
+| [shadcn/ui](https://ui.shadcn.com) | **Como construir.** Componentes acessíveis, composáveis, com tema em CSS variables. É a base técnica do kit. |
+| [Refactoring UI](https://www.refactoringui.com) (Adam Wathan e Steve Schoger) | **Como decidir o visual.** Escalas definidas antes, hierarquia, poucas opções. É o raciocínio por trás dos tokens. |
+| [Emil Kowalski](https://emilkowal.ski) | **Como deve parecer ao uso.** Movimento rápido, com propósito, e cuidado com detalhes que ninguém nota conscientemente. |
+
+Cada uma tem uma página própria em [Regras de design](/docs/regras-de-design), com o que tiramos dela e o efeito no código.
+
+## Por que isso importa para a empresa
+
+### Retrabalho
+
+Sem um sistema compartilhado, a mesma correção é feita duas vezes: uma por projeto. Um erro de acessibilidade no select, por exemplo, precisa ser achado e corrigido em cada cópia. Com o kit, a correção é feita uma vez e chega aos projetos com uma atualização de versão.
+
+### Consistência
+
+Quem usa o Portal e o checkout deveria sentir que está no mesmo produto. Isso depende de decisões repetidas em centenas de lugares: espaçamento, raio, cor de erro, foco, tempo de uma animação. Quando elas ficam em tokens e em componentes, a consistência deixa de depender de memória e revisão de código.
+
+### Custo de começar algo novo
+
+Hoje uma aplicação nova parte do zero ou copia um dos monolitos, herdando a divergência. Com o kit, ela começa com o visual completo, a configuração de TypeScript e o lint já prontos.
+
+### White-label
+
+O Portal já atende clientes com temas próprios, que sobrescrevem CSS variables no padrão do shadcn (`--primary`, `--background`, `--radius`). O kit mantém esses nomes. O tema de um cliente muda a cara dos componentes sem alterar nenhum deles.
+
+### Acessibilidade e qualidade como padrão
+
+Os componentes têm comportamento acessível (foco, teclado, ARIA) vindo do Base UI. Quando isso fica no kit, cada tela nova já nasce com ele, em vez de depender de cada pessoa lembrar.
+
+## Por que pacotes e não cópia de código
+
+O shadcn/ui entrega o código para o projeto copiar e editar. Isso dá liberdade total, mas cada projeto vira dono da própria cópia, e a divergência volta.
+
+O Mosaico parte do código do shadcn/ui, mas o publica como pacotes versionados (`@multiclubes/ui`). A customização acontece por variantes, props, composição e tokens previstos no kit. Em troca, uma correção chega a todos.
+
+<Callout title="Decisão em aberto">
+Para blocos que variam por aplicação, como uma tela de login ou uma listagem, um registry no estilo shadcn pode fazer sentido mais tarde. Está registrado em `docs/plano.md`.
+</Callout>
+
+## Resultados
+
+### Já entregue
+
+Números do estado atual do repositório:
+
+- **65 componentes** no `@multiclubes/ui`: todos os 63 do shadcn/ui (estilo `base-luma`) mais dois próprios da Multiclubes, `DateWheelPicker` e `DateField`.
+- **66 páginas de documentação** e **420 exemplos** neste catálogo.
+- **Tema** em CSS variables, com modo claro e escuro, compatível com `next-themes`.
+- **Configurações compartilhadas** de TypeScript e Biome, em pacotes próprios.
+- **CI** em todo PR: lint, tipos, testes e build.
+
+### Ainda não medido
+
+O Portal ainda não adotou o kit, então não há números de adoção. Os indicadores que vamos acompanhar quando o piloto começar:
+
+- componentes duplicados removidos dos monolitos;
+- percentual de telas usando componentes do kit;
+- tempo para iniciar uma aplicação nova com o padrão visual completo;
+- tempo entre uma correção no kit e a chegada nos dois projetos.
+
+<Callout title="Sobre os resultados">
+Esta página só afirma o que já existe no repositório. Os ganhos de adoção entram aqui quando forem medidos no piloto, com os números reais.
+</Callout>
+
+## Próximos passos
+
+Leia as [Regras de design](/docs/regras-de-design) para ver os princípios que guiam o visual e o comportamento dos componentes, ou vá direto para os [componentes](/docs/components).
