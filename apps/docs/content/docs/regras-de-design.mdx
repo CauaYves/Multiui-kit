@@ -1,0 +1,155 @@
+---
+title: Regras de design
+description: Os princípios de Refactoring UI, Emil Kowalski e shadcn/ui, e como cada um molda o Mosaico.
+---
+
+Estas são as regras que guiam o visual e o comportamento do Mosaico. Elas vêm de três fontes. Este texto resume e interpreta as ideias com palavras nossas; para o argumento completo, leia as fontes, listadas no fim.
+
+<Callout title="Regra, não retrato">
+As regras descrevem o alvo do kit. Aplicá-las aos 65 componentes é um trabalho em andamento, registrado na Fase 3 do `docs/plano.md`. Quando um componente fugir de uma regra, o componente é que deve mudar.
+</Callout>
+
+## Refactoring UI
+
+Livro de Adam Wathan, criador do Tailwind CSS, e Steve Schoger, designer. O ponto central: bom visual vem de **decisões sistemáticas**, não de talento artístico. É a mesma ideia por trás da escala de espaçamento, de cores e de tipografia do Tailwind.
+
+### Limite as escolhas
+
+Defina as escalas antes de desenhar: tamanhos de texto, espaçamento, raios, sombras, tons de cor. Na hora de decidir, escolhe-se um valor da lista em vez de inventar um.
+
+**No Mosaico:** os valores vivem em tokens (CSS variables e o tema do Tailwind). Os componentes só usam tokens semânticos como `bg-primary` e `text-muted-foreground`, nunca cores fixas nem valores soltos.
+
+### Hierarquia é tudo
+
+Nem tudo na tela pode ter o mesmo peso. Para destacar algo, enfraqueça o resto: em vez de aumentar o título, diminua o contraste do que é secundário. Tamanho não é a única ferramenta; peso e cor também criam hierarquia.
+
+**No Mosaico:** o `Button` já tem variantes de ênfase (`default`, `secondary`, `outline`, `ghost`, `destructive`) e `muted-foreground` serve ao texto secundário. A regra: cada tela tem uma ação primária e as demais usam variantes mais discretas.
+
+### Menos bordas
+
+Para separar elementos, antes de recorrer a uma borda, tente sombra, cor de fundo diferente ou mais espaço. Telas cheias de bordas parecem pesadas e confusas.
+
+**Regra no Mosaico:** superfícies como card, popover e sidebar se distinguem por fundo e sombra leve. A borda fica para onde ela comunica algo, como o contorno de um campo de formulário.
+
+### Comece com espaço demais
+
+Dê mais espaço do que parece necessário e vá tirando. Interfaces apertadas parecem amadoras, e é mais fácil reduzir do que perceber que faltou.
+
+**Regra no Mosaico:** o espaçamento padrão é generoso. Densidade maior é uma variante explícita, por exemplo `size="sm"`.
+
+### Não dependa só da cor
+
+Cor sozinha não comunica para quem tem daltonismo ou baixa visão. Estados importantes precisam de outro sinal: ícone, texto ou forma.
+
+**Regra no Mosaico:** erro, sucesso e aviso trazem ícone ou texto além da cor, o foco visível é sempre mantido e o contraste dos pares `background` e `foreground` é critério de aceite de um componente.
+
+## Emil Kowalski
+
+Design engineer, autor das bibliotecas Sonner (toasts) e Vaul (drawers) e do curso Animations on the Web. A ideia central: o **movimento é parte da usabilidade**, e a qualidade vem de detalhes pequenos que, somados, mudam a sensação do produto.
+
+### Anime só o que faz sentido
+
+Pergunte com que frequência a ação acontece. Algo que a pessoa faz centenas de vezes por dia não deve ter animação chamativa, porque ela vira atraso. Animação serve a feedback, orientação espacial e prazer em momentos menos frequentes.
+
+**Regra no Mosaico:** ações rotineiras, como abrir um menu ou trocar de aba, têm transições curtas e discretas. Movimentos mais expressivos ficam para momentos pontuais.
+
+### Rápido e com a curva certa
+
+Animações de interface devem ficar abaixo de cerca de 300 ms. Para entrada e saída, prefira `ease-out`, que responde logo e desacelera no fim. Evite `ease-in` em interface: o início lento parece demora. As curvas nativas do CSS são fracas, então vale definir uma curva própria.
+
+**Regra no Mosaico:** duração e curva devem ser tokens, para que todos os componentes se movam do mesmo jeito. Isso ainda não existe no tema: hoje cada componente define a própria duração (os overlays usam `duration-100`). A proposta:
+
+```css
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --duration-fast: 150ms;
+  --duration-base: 220ms;
+}
+```
+
+### Nunca comece em scale(0)
+
+Nada na vida real surge do nada. Elementos que aparecem devem partir de uma escala próxima de 1, como `0.95`, junto com a opacidade. Partir de 0 parece artificial.
+
+**No Mosaico:** já é assim. Os overlays entram com `zoom-in-95` e `fade-in-0`, e saem com `zoom-out-95` e `fade-out-0`.
+
+### Respeite a origem
+
+Popovers, menus e tooltips devem crescer a partir do elemento que os abriu, e não do centro. Isso conecta a causa ao efeito.
+
+**No Mosaico:** já é assim. Popover, tooltip, select, dropdown e demais overlays usam `origin-(--transform-origin)`, a origem calculada pelo posicionamento do Base UI.
+
+### Dê feedback ao toque
+
+Um botão que reduz levemente a escala ao ser pressionado (algo como `scale(0.97)`) faz a interface parecer que ouve o usuário.
+
+```tsx
+<button className="transition-transform active:scale-[0.97]" />
+```
+
+**No Mosaico:** o `Button` hoje responde ao clique com `active:translate-y-px`, um deslocamento de 1 px. Trocar por uma redução de escala é uma decisão a tomar com o design.
+
+### Transições antes de keyframes
+
+Transições CSS podem ser interrompidas e voltam de onde estão. Keyframes recomeçam do zero. Para estados de interface que o usuário pode inverter no meio do caminho (abrir e fechar rápido), prefira transições.
+
+### Anime `transform` e `opacity`
+
+Essas duas propriedades são baratas para o navegador. Animar largura, altura ou margens força recálculo de layout e pode travar em máquinas mais fracas.
+
+### Respeite `prefers-reduced-motion`
+
+Quem pediu menos movimento ao sistema operacional não deve receber deslocamentos grandes. Reduza ou troque por um fade simples.
+
+**No Mosaico:** aplicado só em parte (por exemplo, no `DateWheelPicker` e no shimmer do `Trace`). Levar a regra aos overlays é pendência.
+
+## shadcn/ui
+
+Coleção de componentes de Shadcn. Seus princípios de projeto, que o Mosaico herda e adapta:
+
+### Código aberto e composição
+
+Os componentes são pequenos, legíveis e feitos para serem combinados. Um `Card` tem `CardHeader`, `CardContent` e `CardFooter` em vez de dezenas de props. Isso mantém a API previsível e o kit fácil de entender.
+
+**No Mosaico:** seguimos a mesma regra de composição. Integrações como `Link` e `Image` entram por `render`, e não por dependência do Next dentro do pacote.
+
+### Padrões bonitos
+
+O componente deve ficar bom sem configuração. Quem usa não deveria precisar ajustar espaçamento e sombra para o resultado parecer aceitável.
+
+### Tema por CSS variables
+
+Cores, raios e sidebar são variáveis nomeadas por função (`--background`, `--foreground`, `--primary`, `--radius`), não por valor. Trocar de tema é trocar variáveis.
+
+**No Mosaico:** esse contrato de nomes é mantido de propósito. Os temas de cliente do Portal já usam esse padrão e continuam funcionando com os novos componentes.
+
+### Onde nos afastamos
+
+O shadcn/ui distribui o código para ser copiado. O Mosaico o publica como pacote, para que correções cheguem a todos os projetos. A explicação está em [Por que um design system](/docs/por-que-um-design-system#por-que-pacotes-e-não-cópia-de-código).
+
+## Como as regras se combinam
+
+| Decisão | Refactoring UI | Emil Kowalski | shadcn/ui |
+| --- | --- | --- | --- |
+| Valores vêm de uma lista curta | Limite as escolhas | Duração e curva padronizadas | Variáveis de tema |
+| Hierarquia entre elementos | Enfraqueça o secundário | Movimento só onde ajuda | Variantes de botão |
+| Qualidade sem esforço | Espaço generoso | Detalhes de feedback | Padrões bonitos |
+| Acessibilidade | Não dependa só da cor | `prefers-reduced-motion` | Base UI (foco, teclado, ARIA) |
+
+## Checklist para um componente novo
+
+Antes de abrir o PR de um componente ou de uma mudança visual:
+
+1. Usa só tokens semânticos, sem cor ou valor fixo?
+2. Tem uma ênfase clara e variantes para os outros níveis?
+3. Funciona só com teclado e tem foco visível?
+4. O estado não depende apenas da cor?
+5. As transições usam a duração e a curva padrão, com `transform` e `opacity`?
+6. Overlays crescem a partir do gatilho e respeitam `prefers-reduced-motion`?
+7. É composto por partes pequenas, sem depender de Next.js?
+
+## Fontes
+
+- [Refactoring UI](https://www.refactoringui.com), de Adam Wathan e Steve Schoger.
+- [Emil Kowalski](https://emilkowal.ski), com os artigos sobre animação em interfaces, e o curso [Animations on the Web](https://animations.dev).
+- [shadcn/ui](https://ui.shadcn.com/docs), documentação e princípios de projeto.

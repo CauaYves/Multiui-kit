@@ -56,6 +56,12 @@ pnpm --filter docs sync:shadcn
 
 O script baixa a documentação, troca os imports para `@multiclubes/ui`, substitui a seção de instalação e descarta exemplos que dependem de código interno do site do shadcn (o resumo lista quais e por quê). Não edite os arquivos gerados; as páginas próprias (`content/docs/index.mdx`, `installation.mdx`) são mantidas à mão.
 
+## Para IA
+
+O catálogo tem a página `/docs/para-ia`, com os princípios do Mosaico escritos como instrução para uma IA (relatórios, documentação, templates de e-mail, protótipos). Ela também sai em Markdown puro em `/md/para-ia`, e o catálogo publica um índice em `/llms.txt`.
+
+A skill `skills/mosaico-design` carrega essas instruções sozinha quando alguém pede material da Multiclubes. Para instalar, copie a pasta para `~/.claude/skills/` (Claude Code) ou envie-a como skill no Claude. A referência da skill é gerada da página; depois de mudar `apps/docs/content/docs/para-ia.mdx`, rode `pnpm --filter docs sync:ia`.
+
 ## Usando o kit em um app
 
 ```css

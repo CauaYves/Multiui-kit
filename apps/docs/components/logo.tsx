@@ -4,6 +4,9 @@ import type * as React from "react";
 // As cores oficiais são o amarelo #fee502 e o azul #0540c5; aqui a marca usa currentColor
 // para acompanhar o tema do site (como o logo do shadcn/ui).
 
+/** Cores oficiais da marca. Fonte única: a vitrine da home e outros usos partem daqui. */
+export const BRAND_COLORS = { yellow: "#fee502", blue: "#0540c5" } as const;
+
 /** Símbolo da Multiclubes (o "m"). */
 export function LogoMark(props: React.ComponentProps<"svg">) {
   return (
