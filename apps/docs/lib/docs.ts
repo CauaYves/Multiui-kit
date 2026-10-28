@@ -17,7 +17,13 @@ export type DocPage = {
 
 export type TocItem = { title: string; url: string; depth: number };
 
-export type NavItem = { title: string; url: string; badge?: string };
+export type NavItem = {
+  title: string;
+  url: string;
+  badge?: string;
+  /** Coluna do rodapé em que o item aparece. */
+  group?: "docs" | "principios" | "ia";
+};
 
 const contentDir = join(process.cwd(), "content", "docs");
 
@@ -27,12 +33,12 @@ const COMPONENT_DIRS = ["components", "components-multiclubes"] as const;
 
 /** Páginas avulsas, na ordem em que aparecem na navegação. */
 export const SECTIONS: NavItem[] = [
-  { title: "Introdução", url: "/docs" },
-  { title: "Por que um design system", url: "/docs/por-que-um-design-system" },
-  { title: "Regras de design", url: "/docs/regras-de-design" },
-  { title: "Para IA", url: "/docs/para-ia" },
-  { title: "Componentes", url: "/docs/components" },
-  { title: "Instalação", url: "/docs/installation" },
+  { title: "Introdução", url: "/docs", group: "docs" },
+  { title: "Por que um design system", url: "/docs/por-que-um-design-system", group: "principios" },
+  { title: "Regras de design", url: "/docs/regras-de-design", group: "principios" },
+  { title: "Para IA", url: "/docs/para-ia", group: "ia" },
+  { title: "Componentes", url: "/docs/components", group: "docs" },
+  { title: "Instalação", url: "/docs/installation", group: "docs" },
 ];
 
 /** Lê o frontmatter simples usado nos MDX (chave: valor, com um nível de aninhamento). */
