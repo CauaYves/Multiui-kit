@@ -30,6 +30,7 @@ export const SECTIONS: NavItem[] = [
   { title: "Introdução", url: "/docs" },
   { title: "Por que um design system", url: "/docs/por-que-um-design-system" },
   { title: "Regras de design", url: "/docs/regras-de-design" },
+  { title: "Para IA", url: "/docs/para-ia" },
   { title: "Componentes", url: "/docs/components" },
   { title: "Instalação", url: "/docs/installation" },
 ];
