@@ -28,6 +28,8 @@ const COMPONENT_DIRS = ["components", "components-multiclubes"] as const;
 /** Páginas avulsas, na ordem em que aparecem na navegação. */
 export const SECTIONS: NavItem[] = [
   { title: "Introdução", url: "/docs" },
+  { title: "Por que um design system", url: "/docs/por-que-um-design-system" },
+  { title: "Regras de design", url: "/docs/regras-de-design" },
   { title: "Componentes", url: "/docs/components" },
   { title: "Instalação", url: "/docs/installation" },
 ];
