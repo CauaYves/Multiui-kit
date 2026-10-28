@@ -15,7 +15,7 @@
     "./lib/*": "./src/lib/*.ts"
   },
   "scripts": {
-    "check-types": "tsc --noEmit",
+    "check-types": "node node_modules/typescript/bin/tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
   },
