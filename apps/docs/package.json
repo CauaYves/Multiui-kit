@@ -7,7 +7,7 @@
     "dev": "next dev --port 3001",
     "build": "next build",
     "start": "next start",
-    "check-types": "next typegen && tsc --noEmit",
+    "check-types": "next typegen && node node_modules/typescript/bin/tsc --noEmit",
     "sync:shadcn": "node scripts/sync-shadcn.mjs"
   },
   "dependencies": {
