@@ -60,6 +60,9 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
+  /* Fonte de títulos e números em destaque (ver --heading-font no :root). */
+  --font-heading: var(--heading-font);
+
   /* Escala de arredondamento por nível de aninhamento (ver :root). */
   --radius-surface: var(--surface-radius);
   --radius-field: calc(var(--surface-radius) - var(--radius-step));
@@ -77,6 +80,8 @@
    */
   --surface-radius: calc(var(--radius) * 3.2);
   --radius-step: 0.5rem;
+  /* Por padrão os títulos usam a fonte do texto. O app troca definindo --heading-font. */
+  --heading-font: var(--font-sans);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
