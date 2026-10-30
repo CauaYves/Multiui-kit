@@ -2,6 +2,7 @@ import { Button } from "@multiclubes/ui/components/button";
 import Link from "next/link";
 import { LogoWordmark } from "@/components/logo";
 import { VisualIdentity } from "@/components/visual-identity";
+import { WaveHero } from "@/components/wave-hero";
 import { getComponentPages } from "@/lib/docs";
 
 export default function Page() {
@@ -9,7 +10,8 @@ export default function Page() {
 
   return (
     <>
-      <div className="container-wrapper flex min-h-[calc(80svh-var(--header-height))] flex-col items-center justify-center px-6 py-24">
+      <div className="container-wrapper relative isolate flex min-h-[calc(80svh-var(--header-height))] flex-col items-center justify-center overflow-hidden px-6 py-24">
+        <WaveHero />
         <section className="flex max-w-3xl flex-col items-center gap-4 text-center">
           <LogoWordmark className="mb-4 h-8 w-auto sm:h-10" />
           <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
