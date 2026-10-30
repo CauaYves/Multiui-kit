@@ -71,6 +71,9 @@ export function MobileNav({
               <Link href="/" onClick={() => setOpen(false)} className="text-2xl font-medium">
                 Início
               </Link>
+              <Link href="/blocks" onClick={() => setOpen(false)} className="text-2xl font-medium">
+                Blocks
+              </Link>
               <Link href="/create" onClick={() => setOpen(false)} className="text-2xl font-medium">
                 Create
               </Link>

@@ -18,7 +18,7 @@ const linkClassName = "text-sm text-muted-foreground transition-colors hover:tex
 
 export function SiteFooter() {
   return (
-    <footer className="bg-muted/50 group-has-[[data-slot=docs]]/layout:hidden group-has-[[data-slot=create]]/layout:hidden">
+    <footer className="bg-muted/50 group-has-data-[slot=docs]/layout:hidden group-has-data-[slot=create]/layout:hidden">
       <div className="container-wrapper px-6">
         <div className="mx-auto flex w-full max-w-5xl flex-col gap-10 py-12 md:flex-row md:justify-between">
           <Link href="/" aria-label="Mosaico, página inicial" className="w-fit">
