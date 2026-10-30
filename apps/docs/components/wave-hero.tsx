@@ -7,7 +7,7 @@ import * as React from "react";
 // O preenchimento é um degradê do primary, mais forte no topo, e uma linha fina marca o
 // contorno. Fica atrás do conteúdo, então a opacidade é baixa para o texto continuar
 // legível nos dois temas. O preserveAspectRatio="none" estica a onda na largura da tela.
-const CURVE = "M0,200 C150,10 570,10 720,200 C870,390 1290,390 1440,200";
+const CURVE = "M0,200 C200,110 520,110 720,200 C920,290 1240,290 1440,200";
 
 export function WaveHero({ className, ...props }: React.ComponentProps<"svg">) {
   const gradientId = React.useId();
