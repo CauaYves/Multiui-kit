@@ -1,0 +1,9 @@
+{
+  "tailwindCSS.experimental.configFile": {
+    "apps/docs/app/globals.css": ["apps/docs/**", "packages/ui/**"],
+    "apps/web/app/globals.css": "apps/web/**"
+  },
+  "tailwindCSS.classAttributes": ["class", "className"],
+  "tailwindCSS.classFunctions": ["cn", "cva"],
+  "editor.quickSuggestions": { "strings": "on" }
+}
