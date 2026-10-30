@@ -1,0 +1,50 @@
+---
+title: Metric Card
+description: Card de indicador para dashboards, com valor em destaque, ícone e variação.
+---
+
+<ComponentPreview name="metric-card-demo" />
+
+## Installation
+
+<Installation name="metric-card" />
+
+## Usage
+
+```tsx
+import { MetricCard } from "@multiclubes/ui/components/metric-card"
+```
+
+```tsx
+<MetricCard
+  icon={<CurrencyCircleDollarIcon />}
+  title="Receita"
+  value="R$ 12.345"
+  change="+10% vs período anterior"
+  trend="positive"
+/>
+```
+
+O valor chega já formatado. Quando começa com um símbolo de moeda (`R$`, `US$`, `$`, `€`), o símbolo é desenhado menor e elevado; o texto continua inteiro para leitores de tela.
+
+## Como funciona
+
+- **Responsivo pela largura do card:** o card usa container queries, então o padding e o tamanho do número acompanham a largura do próprio card, e não a da tela. Ele se comporta igual em grades de 2, 3 ou 4 colunas.
+- **Variação:** `trend="positive"` pinta a variação de verde e `trend="negative"` de vermelho, sempre com uma seta, para não depender só da cor. Sem `trend`, a variação fica neutra.
+
+## Grid
+
+A cor do ícone e do halo vem de `--metric-accent`, que por padrão é o `primary`. Troque por card com `style` ou `className` (`[--metric-accent:var(--chart-3)]`).
+
+<ComponentPreview name="metric-card-grid" />
+
+## API Reference
+
+| Prop | Tipo | Padrão | Descrição |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | — | Rótulo da métrica. |
+| `value` | `ReactNode` | — | Valor já formatado. |
+| `icon` | `ReactNode` | — | Ícone no canto superior direito. |
+| `change` | `ReactNode` | — | Texto da variação. Sem ele a linha não aparece. |
+| `trend` | `"positive" \| "negative"` | — | Direção da variação. |
+| `footer` | `ReactNode` | — | Conteúdo abaixo do valor. |
