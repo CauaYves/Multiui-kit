@@ -10,8 +10,8 @@ export default function AvatarDemo() {
   return (
     <Avatar>
       <AvatarImage
-        src="https://github.com/shadcn.png"
-        alt="@shadcn"
+        src="/avatars/multiclubes.svg"
+        alt="@multiclubes"
         className="grayscale"
       />
       <AvatarFallback>CN</AvatarFallback>
