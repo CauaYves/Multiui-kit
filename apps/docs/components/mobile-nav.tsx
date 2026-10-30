@@ -71,6 +71,9 @@ export function MobileNav({
               <Link href="/" onClick={() => setOpen(false)} className="text-2xl font-medium">
                 Início
               </Link>
+              <Link href="/create" onClick={() => setOpen(false)} className="text-2xl font-medium">
+                Create
+              </Link>
               {sections.map(link)}
             </div>
           </div>
