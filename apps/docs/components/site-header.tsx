@@ -21,11 +21,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 w-full bg-background">
       <div className="container-wrapper px-6">
         <div className="flex h-(--header-height) items-center **:data-[slot=separator]:h-4!">
-          <MobileNav
-            sections={SECTIONS}
-            components={components}
-            className="flex lg:hidden"
-          />
+          <MobileNav sections={SECTIONS} components={components} className="flex lg:hidden" />
           <Button
             variant="ghost"
             size="icon"
@@ -41,10 +37,7 @@ export function SiteHeader() {
             <div className="hidden w-full flex-1 md:flex md:w-auto md:flex-none">
               <CommandMenu sections={SECTIONS} components={components} />
             </div>
-            <Separator
-              orientation="vertical"
-              className="ml-2 hidden lg:block"
-            />
+            <Separator orientation="vertical" className="ml-2 hidden lg:block" />
             <ModeSwitcher />
           </div>
         </div>
