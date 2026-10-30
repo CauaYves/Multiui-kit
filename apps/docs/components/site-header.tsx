@@ -11,6 +11,7 @@ import { getComponentPages, SECTIONS, toNavItem } from "@/lib/docs";
 const NAV_ITEMS = [
   { title: "Docs", url: "/docs" },
   { title: "Componentes", url: "/docs/components" },
+  { title: "Create", url: "/create" },
 ];
 
 export function SiteHeader() {

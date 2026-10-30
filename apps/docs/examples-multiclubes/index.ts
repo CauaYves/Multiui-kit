@@ -11,4 +11,6 @@ export const MulticlubesExamples: Record<string, () => Promise<{ default: React.
     "date-wheel-picker-format": () => import("./date-wheel-picker-format"),
     "date-wheel-picker-limits": () => import("./date-wheel-picker-limits"),
     "date-wheel-picker-states": () => import("./date-wheel-picker-states"),
+    "metric-card-demo": () => import("./metric-card-demo"),
+    "metric-card-grid": () => import("./metric-card-grid"),
   };
