@@ -201,11 +201,7 @@ export function VisualIdentity() {
           </div>
         </Block>
 
-        <Block
-          id="fontes"
-          title="Fontes"
-          note="Fontes oficiais do kit"
-        >
+        <Block id="fontes" title="Fontes" note="Fontes oficiais do kit">
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="flex flex-col gap-4 rounded-surface bg-muted p-6">
               <Label>Geist Sans</Label>
@@ -282,7 +278,9 @@ export function VisualIdentity() {
 
         <Block id="formas" title="Formas" note="Formas suaves, como a logo">
           <div className="flex flex-col gap-3">
-            <Label>Escala de raios: cada nível interno tem o raio do externo menos o espaço entre eles</Label>
+            <Label>
+              Escala de raios: cada nível interno tem o raio do externo menos o espaço entre eles
+            </Label>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {RADII.map((radius) => (
                 <div key={radius.name} className="flex flex-col items-center gap-2">

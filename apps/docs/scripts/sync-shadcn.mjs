@@ -210,14 +210,17 @@ const IDENTITY_REWRITES = [
   ["shadcn@vercel.com", "multiclubes@example.com"],
   ["https://x.com/shadcn", "https://example.com/multiclubes"],
   ["https://ui.shadcn.com/docs/installation", "https://example.com/docs/installation"],
-  ["<div className=\"leading-none font-medium\">shadcn/ui</div>", "<div className=\"leading-none font-medium\">Multiclubes UI</div>"],
-  ["username: \"shadcn\"", "username: \"multiclubes\""],
-  ["name: \"shadcn\"", "name: \"Multiclubes\""],
-  ["alt=\"@shadcn\"", "alt=\"@multiclubes\""],
-  ["alt=\"shadcn\"", "alt=\"multiclubes\""],
-  ["\"@shadcn\"", "\"@multiclubes\""],
+  [
+    '<div className="leading-none font-medium">shadcn/ui</div>',
+    '<div className="leading-none font-medium">Multiclubes UI</div>',
+  ],
+  ['username: "shadcn"', 'username: "multiclubes"'],
+  ['name: "shadcn"', 'name: "Multiclubes"'],
+  ['alt="@shadcn"', 'alt="@multiclubes"'],
+  ['alt="shadcn"', 'alt="multiclubes"'],
+  ['"@shadcn"', '"@multiclubes"'],
   ["Ping @shadcn", "Ping @multiclubes"],
-  ["alt: \"@shadcn\"", "alt: \"@multiclubes\""],
+  ['alt: "@shadcn"', 'alt: "@multiclubes"'],
 ];
 
 function applyIdentity(text) {
