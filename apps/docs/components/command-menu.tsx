@@ -1,9 +1,7 @@
 "use client";
 
-import { Button } from "@multiclubes/ui/components/button";
 import {
   Command,
-  CommandDialog,
   CommandEmpty,
   CommandGroup,
   CommandInput,
@@ -12,10 +10,18 @@ import {
 } from "@multiclubes/ui/components/command";
 import { Kbd, KbdGroup } from "@multiclubes/ui/components/kbd";
 import { ArrowRightIcon, CircleDashedIcon } from "@phosphor-icons/react";
+import { cn } from "cn";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import type { NavItem } from "@/lib/docs";
 
+/** Componentes sugeridos antes de digitar. Ao digitar, a busca vale para todos. */
+const SUGGESTED = 5;
+
+/**
+ * Busca do header. Fica no lugar: ao focar, o campo alarga para a esquerda e as opções
+ * aparecem logo abaixo dele. Ctrl+K ou "/" focam o campo; Esc fecha.
+ */
 export function CommandMenu({
   sections,
   components,
@@ -24,7 +30,9 @@ export function CommandMenu({
   components: NavItem[];
 }) {
   const router = useRouter();
+  const inputRef = React.useRef<HTMLInputElement>(null);
   const [open, setOpen] = React.useState(false);
+  const [query, setQuery] = React.useState("");
 
   React.useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -38,61 +46,84 @@ export function CommandMenu({
           return;
         }
         event.preventDefault();
-        setOpen((value) => !value);
+        inputRef.current?.focus();
       }
     };
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
   }, []);
 
-  const go = (url: string) => {
+  const close = () => {
     setOpen(false);
+    setQuery("");
+    inputRef.current?.blur();
+  };
+
+  const go = (url: string) => {
+    close();
     router.push(url);
   };
 
   return (
-    <>
-      <Button
-        variant="outline"
-        className="relative h-8 w-full justify-start rounded-lg bg-muted/50 pl-3 font-normal text-muted-foreground shadow-none hover:bg-muted/50 sm:pr-12 md:w-48 lg:w-56 xl:w-64 dark:bg-card"
-        onClick={() => setOpen(true)}
+    <Command
+      data-open={open}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          setOpen(false);
+          setQuery("");
+        }
+      }}
+      onKeyDown={(event) => {
+        if (event.key === "Escape") close();
+      }}
+      className={cn(
+        "relative w-full overflow-visible rounded-full bg-transparent p-0 transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] md:w-48 xl:w-64 data-[open=true]:md:w-64 data-[open=true]:xl:w-96 motion-reduce:transition-none",
+        // O CommandInput vem com moldura de campo; aqui ele vira a pílula do header.
+        "*:data-[slot=command-input-wrapper]:p-0 **:data-[slot=input-group]:h-8 **:data-[slot=input-group]:rounded-full **:data-[slot=input-group]:bg-muted/50 dark:**:data-[slot=input-group]:bg-card",
+      )}
+    >
+      <CommandInput
+        ref={inputRef}
+        value={query}
+        onValueChange={setQuery}
+        onFocus={() => setOpen(true)}
+        placeholder="Buscar na documentação..."
+        aria-label="Buscar na documentação"
+        className="pr-14 placeholder:text-muted-foreground"
+      />
+      <KbdGroup
+        className={cn(
+          "pointer-events-none absolute top-1.5 right-1.5 hidden sm:flex",
+          open && "sm:hidden",
+        )}
       >
-        <span className="hidden lg:inline-flex">Buscar na documentação...</span>
-        <span className="inline-flex lg:hidden">Buscar...</span>
-        <KbdGroup className="absolute top-1.5 right-1.5 hidden sm:flex">
-          <Kbd>Ctrl</Kbd>
-          <Kbd>K</Kbd>
-        </KbdGroup>
-      </Button>
-      <CommandDialog
-        open={open}
-        onOpenChange={setOpen}
-        title="Buscar"
-        description="Busque uma página"
+        <Kbd>Ctrl</Kbd>
+        <Kbd>K</Kbd>
+      </KbdGroup>
+      <CommandList
+        hidden={!open}
+        // Clicar numa opção não pode tirar o foco do campo antes do clique valer.
+        onMouseDown={(event) => event.preventDefault()}
+        className="absolute top-full right-0 mt-2 w-full min-w-64 origin-top rounded-surface border bg-popover p-1 text-popover-foreground shadow-lg animate-in duration-200 fade-in-0 zoom-in-95 slide-in-from-top-1"
       >
-        <Command>
-          <CommandInput placeholder="Buscar página ou componente..." />
-          <CommandList>
-            <CommandEmpty>Nenhum resultado.</CommandEmpty>
-            <CommandGroup heading="Páginas">
-              {sections.map((item) => (
-                <CommandItem key={item.url} value={item.title} onSelect={() => go(item.url)}>
-                  <ArrowRightIcon />
-                  {item.title}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-            <CommandGroup heading="Componentes">
-              {components.map((item) => (
-                <CommandItem key={item.url} value={item.title} onSelect={() => go(item.url)}>
-                  <CircleDashedIcon />
-                  {item.title}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </CommandDialog>
-    </>
+        <CommandEmpty>Nenhum resultado.</CommandEmpty>
+        <CommandGroup heading={query ? "Páginas" : "Comece por aqui"}>
+          {sections.map((item) => (
+            <CommandItem key={item.url} value={item.title} onSelect={() => go(item.url)}>
+              <ArrowRightIcon />
+              {item.title}
+            </CommandItem>
+          ))}
+        </CommandGroup>
+        <CommandGroup heading={query ? "Componentes" : "Componentes populares"}>
+          {(query ? components : components.slice(0, SUGGESTED)).map((item) => (
+            <CommandItem key={item.url} value={item.title} onSelect={() => go(item.url)}>
+              <CircleDashedIcon />
+              {item.title}
+            </CommandItem>
+          ))}
+        </CommandGroup>
+      </CommandList>
+    </Command>
   );
 }

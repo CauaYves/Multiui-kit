@@ -161,3 +161,65 @@
     @apply bg-background text-foreground font-sans antialiased;
   }
 }
+
+/*
+ * Troca de tema (ThemeToggle): efeito "Circle" do react-theme-switch-animation. Durante
+ * a View Transition, o tema novo aparece num círculo que nasce no centro do botão
+ * (--theme-x, --theme-y) e cresce até cobrir a tela (--theme-size). A máscara é um
+ * gradiente circular (não precisa carregar imagem, então a animação começa na hora)
+ * animado por mask-size e mask-position, que o Safari também anima. data-theme-transition
+ * só existe enquanto a troca acontece, então outras View Transitions não são afetadas.
+ */
+html[data-theme-transition]::view-transition-old(root),
+html[data-theme-transition]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html[data-theme-transition]::view-transition-new(root) {
+  mask: radial-gradient(closest-side, #fff calc(100% - 1px), transparent) no-repeat;
+  animation: theme-reveal 750ms ease-in-out both;
+}
+
+@keyframes theme-reveal {
+  from {
+    mask-size: 0 0;
+    mask-position: var(--theme-x) var(--theme-y);
+  }
+  to {
+    mask-size: var(--theme-size) var(--theme-size);
+    mask-position: calc(var(--theme-x) - var(--theme-size) / 2)
+      calc(var(--theme-y) - var(--theme-size) / 2);
+  }
+}
+
+/*
+ * Ícone do ThemeToggle: o que aparece entra girando e crescendo, com um leve passo além
+ * do tamanho final, e sai do desfoque, como os ícones de sistema da Apple. Só roda durante
+ * a troca (data-theme-transition), então não anima ao carregar a página.
+ */
+@keyframes theme-icon-sun {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+    transform: rotate(-120deg) scale(0.4);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: rotate(0) scale(1);
+  }
+}
+
+@keyframes theme-icon-moon {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+    transform: rotate(70deg) translateY(30%) scale(0.4);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: rotate(0) translateY(0) scale(1);
+  }
+}

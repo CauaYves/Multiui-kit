@@ -1,0 +1,52 @@
+---
+title: Theme Toggle
+description: Botão de modo claro e escuro com os ícones padrão do Mosaico e transição animada.
+---
+
+<ComponentPreview name="theme-toggle-demo" />
+
+## Installation
+
+<Installation name="theme-toggle" />
+
+As animações ficam no `@multiclubes/ui/styles.css`, que o projeto já importa com o tema.
+
+## Usage
+
+```tsx
+import { ThemeToggle } from "@multiclubes/ui/components/theme-toggle"
+```
+
+Com o [next-themes](https://github.com/pacocoursey/next-themes), num Client Component:
+
+```tsx
+const { resolvedTheme, setTheme } = useTheme()
+
+<ThemeToggle theme={resolvedTheme} onThemeChange={setTheme} />
+```
+
+## Como funciona
+
+- **Transição:** o tema novo aparece num círculo que nasce no centro do botão e cresce até cobrir a tela, em 750 ms. Usa a View Transition API; sem ela, ou com movimento reduzido ligado, a troca é imediata.
+- **Ícone:** o sol (claro) ou a lua (escuro) entra girando e crescendo, com um leve passo além do tamanho final, e sai do desfoque. A animação só roda durante a troca, não ao carregar a página.
+- **Sem piscar:** os dois ícones ficam no HTML e a classe `dark` do `<html>` escolhe qual aparece, então o ícone certo já vem do servidor.
+- **O tema é da aplicação:** o componente não guarda o tema. Ele avisa o tema novo em `onThemeChange` e aplica a classe `dark` no `<html>` durante a transição, para a tela nova já sair no tema certo.
+
+## Ícones
+
+Os ícones padrão de modo claro e escuro também são exportados, para usar em menus e configurações.
+
+<ComponentPreview name="theme-toggle-icons" />
+
+```tsx
+import { MoonIcon, SunIcon } from "@multiclubes/ui/components/theme-toggle"
+```
+
+## API Reference
+
+| Prop | Tipo | Padrão | Descrição |
+| --- | --- | --- | --- |
+| `theme` | `"light" \| "dark"` | classe `dark` do `<html>` | Tema em uso. |
+| `onThemeChange` | `(theme: "light" \| "dark") => void` | — | Aplica o tema novo. |
+
+As demais props vão para o `Button` (`variant="ghost"`, `size="icon"` por padrão).

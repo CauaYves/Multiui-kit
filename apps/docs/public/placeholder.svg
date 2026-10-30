@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" fill="none" viewBox="0 0 1200 1200">
+  <!-- Imagem de exemplo dos blocos, no estilo do placeholder.svg do v0/shadcn: fundo cinza
+       e o ícone de imagem no centro. No escuro, os blocos aplicam brightness e grayscale. -->
+  <rect width="1200" height="1200" fill="#EAEAEA" />
+  <g stroke="#C9C9C9" stroke-width="26" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="460" y="480" width="280" height="240" rx="24" />
+    <circle cx="545" cy="560" r="26" />
+    <path d="m740 640-62-62a26 26 0 0 0-37 0L475 744" />
+  </g>
+</svg>

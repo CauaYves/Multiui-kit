@@ -1,11 +1,12 @@
 import { notFound } from "next/navigation";
+import { BLOCKS } from "@/blocks";
 import { getBlockDemos } from "@/lib/docs";
 import { getExample } from "@/lib/examples";
 
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return getBlockDemos().map((name) => ({ name }));
+  return [...getBlockDemos(), ...BLOCKS.map((block) => block.name)].map((name) => ({ name }));
 }
 
 /** Renderiza um demo em tela cheia, para os previews do tipo "block" (iframe). */

@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@multiclubes/ui/components/button";
 import { cn } from "cn";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -14,18 +13,19 @@ export function MainNav({
   const pathname = usePathname();
 
   return (
-    <nav className={cn("items-center gap-0", className)} {...props}>
+    <nav
+      className={cn("items-center gap-0.5 rounded-full border bg-muted/60 p-1", className)}
+      {...props}
+    >
       {items.map((item) => (
-        <Button
+        <Link
           key={item.url}
-          variant="ghost"
-          size="sm"
-          className="px-2.5 data-[active=true]:text-foreground"
-          nativeButton={false}
-          render={<Link href={item.url} data-active={pathname === item.url} />}
+          href={item.url}
+          data-active={pathname === item.url}
+          className="rounded-full px-3.5 py-1 text-sm font-medium text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 data-[active=true]:bg-background data-[active=true]:text-foreground data-[active=true]:shadow-xs"
         >
           {item.title}
-        </Button>
+        </Link>
       ))}
     </nav>
   );

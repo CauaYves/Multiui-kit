@@ -10,7 +10,10 @@ export default function Page() {
 
   return (
     <>
-      <div className="container-wrapper relative isolate flex min-h-[calc(80svh-var(--header-height))] flex-col items-center justify-center overflow-hidden px-6 py-24">
+      <div className="container-wrapper relative isolate flex min-h-svh flex-col -mt-(--header-height) items-center justify-start overflow-hidden px-6 pt-[calc(14rem+var(--header-height))] pb-16">
+        {/* O hero sobe por baixo do header (-mt), que fica transparente sobre a onda, e
+            ocupa a tela inteira (min-h-svh): ao abrir a página só ele aparece.
+            justify-start: a logo fica sempre a 14rem do header, onde a onda espera o símbolo. */}
         <WaveHero />
         <section className="flex max-w-3xl flex-col items-center gap-4 text-center">
           <LogoWordmark className="mb-4 h-8 w-auto sm:h-10" />
