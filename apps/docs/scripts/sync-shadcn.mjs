@@ -201,10 +201,36 @@ function loadDemo(name, trail = []) {
   return demo;
 }
 
+// Dados de exemplo (avatares, nomes, e-mails) trocados pela identidade da Multiclubes.
+const IDENTITY_REWRITES = [
+  ["https://github.com/shadcn.png", "/avatars/multiclubes.svg"],
+  ["/avatars/shadcn.jpg", "/avatars/multiclubes.svg"],
+  ["https://avatar.vercel.sh/shadcn1", "https://avatar.vercel.sh/multiclubes1"],
+  ["shadcn@example.com", "multiclubes@example.com"],
+  ["shadcn@vercel.com", "multiclubes@example.com"],
+  ["https://x.com/shadcn", "https://example.com/multiclubes"],
+  ["https://ui.shadcn.com/docs/installation", "https://example.com/docs/installation"],
+  [
+    '<div className="leading-none font-medium">shadcn/ui</div>',
+    '<div className="leading-none font-medium">Multiclubes UI</div>',
+  ],
+  ['username: "shadcn"', 'username: "multiclubes"'],
+  ['name: "shadcn"', 'name: "Multiclubes"'],
+  ['alt="@shadcn"', 'alt="@multiclubes"'],
+  ['alt="shadcn"', 'alt="multiclubes"'],
+  ['"@shadcn"', '"@multiclubes"'],
+  ["Ping @shadcn", "Ping @multiclubes"],
+  ['alt: "@shadcn"', 'alt: "@multiclubes"'],
+];
+
+function applyIdentity(text) {
+  return IDENTITY_REWRITES.reduce((result, [from, to]) => result.replaceAll(from, to), text);
+}
+
 function writeDemo(demo, written) {
   if (written.has(demo.name)) return;
   written.add(demo.name);
-  let code = demo.code;
+  let code = applyIdentity(demo.code);
   // Os demos são renderizados a partir de Server Components, então todos precisam ser
   // client components. A marca permite esconder a linha ao exibir o código.
   if (!/^\s*["']use client["']/.test(code)) code = `"use client" // sync-shadcn\n\n${code}`;
@@ -278,7 +304,7 @@ function rewriteLinks(text) {
 }
 
 function rewriteCode(text) {
-  return text
+  return applyIdentity(text)
     .replaceAll("@/components/ui/", "@multiclubes/ui/components/")
     .replaceAll('"@/lib/utils"', '"@multiclubes/ui/lib/utils"')
     .replaceAll('"@/hooks/use-mobile"', '"@multiclubes/ui/hooks/use-mobile"')

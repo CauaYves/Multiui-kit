@@ -26,7 +26,7 @@ export async function ComponentPreview({
     return (
       <div
         data-not-typeset
-        className="relative mt-6 aspect-[4/2.5] w-full overflow-hidden rounded-2xl border md:-mx-1"
+        className="relative mt-6 aspect-[4/2.5] w-full overflow-hidden rounded-item border md:-mx-1"
       >
         {/* Largura de desktop fixa, para o demo não cair no layout mobile; a moldura recorta. */}
         <div className="absolute inset-0 w-[1600px] bg-background">

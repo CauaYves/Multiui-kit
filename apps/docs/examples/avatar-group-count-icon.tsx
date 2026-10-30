@@ -14,7 +14,7 @@ export function AvatarGroupCountIconExample() {
   return (
     <AvatarGroup className="grayscale">
       <Avatar>
-        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+        <AvatarImage src="/avatars/multiclubes.svg" alt="@multiclubes" />
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
       <Avatar>

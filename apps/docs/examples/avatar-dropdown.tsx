@@ -22,7 +22,7 @@ export function AvatarDropdown() {
         render={<Button variant="ghost" size="icon" className="rounded-full" />}
       >
         <Avatar>
-          <AvatarImage src="https://github.com/shadcn.png" alt="shadcn" />
+          <AvatarImage src="/avatars/multiclubes.svg" alt="multiclubes" />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>

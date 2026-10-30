@@ -44,6 +44,7 @@ const TOKENS = [
   { name: "background", className: "bg-background text-foreground" },
   { name: "foreground", className: "bg-foreground text-background" },
   { name: "primary", className: "bg-primary text-primary-foreground" },
+  { name: "highlight", className: "bg-highlight text-highlight-foreground" },
   {
     name: "secondary",
     className: "bg-secondary text-secondary-foreground",
@@ -109,11 +110,10 @@ const ICON_SIZES = [
 ];
 
 const RADII = [
-  { name: "xl", className: "rounded-xl" },
-  { name: "2xl", className: "rounded-2xl" },
-  { name: "3xl", className: "rounded-3xl" },
-  { name: "4xl", className: "rounded-4xl" },
-  { name: "full", className: "rounded-full" },
+  { name: "surface", note: "dialog, card, command", className: "rounded-surface" },
+  { name: "field", note: "campo, botão, popover", className: "rounded-field" },
+  { name: "item", note: "item de menu e de lista", className: "rounded-item" },
+  { name: "full", note: "círculos e pílulas", className: "rounded-full" },
 ];
 
 const ALPHABET = (
@@ -164,7 +164,7 @@ export function VisualIdentity() {
               {BRAND.map((color) => (
                 <div
                   key={color.hex}
-                  className="flex h-28 flex-col justify-end rounded-3xl p-4"
+                  className="flex h-28 flex-col justify-end rounded-field p-4"
                   style={{ backgroundColor: color.hex, color: color.text }}
                 >
                   <span className="text-sm font-semibold">{color.name}</span>
@@ -175,13 +175,13 @@ export function VisualIdentity() {
           </div>
 
           <div className="flex flex-col gap-3">
-            <Label>Tema do kit (neutro, provisório)</Label>
+            <Label>Tema do kit</Label>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
               {TOKENS.map((token) => (
                 <div
                   key={token.name}
                   className={cn(
-                    "flex h-24 flex-col justify-end rounded-3xl p-4 shadow-sm",
+                    "flex h-24 flex-col justify-end rounded-field p-4 shadow-sm",
                     token.className,
                   )}
                 >
@@ -201,18 +201,14 @@ export function VisualIdentity() {
           </div>
         </Block>
 
-        <Block
-          id="fontes"
-          title="Fontes"
-          note="Fonte do catálogo; a oficial do kit ainda não foi definida"
-        >
+        <Block id="fontes" title="Fontes" note="Fontes oficiais do kit">
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="flex flex-col gap-4 rounded-4xl bg-muted p-6">
+            <div className="flex flex-col gap-4 rounded-surface bg-muted p-6">
               <Label>Geist Sans</Label>
               <p className="font-sans text-7xl font-semibold tracking-tight">Aa</p>
               <p className="font-sans text-lg leading-snug">{ALPHABET}</p>
             </div>
-            <div className="flex flex-col gap-4 rounded-4xl bg-muted p-6">
+            <div className="flex flex-col gap-4 rounded-surface bg-muted p-6">
               <Label>Geist Mono</Label>
               <p className="font-mono text-7xl font-semibold tracking-tight">Aa</p>
               <p className="font-mono text-lg leading-snug">{ALPHABET}</p>
@@ -233,13 +229,13 @@ export function VisualIdentity() {
           </div>
           <div className="grid gap-3 sm:grid-cols-3">
             {WEIGHTS.map((weight) => (
-              <div key={weight.name} className="rounded-3xl bg-muted p-5">
+              <div key={weight.name} className="rounded-field bg-muted p-5">
                 <p className={cn("text-3xl", weight.className)}>Aa</p>
                 <p className="pt-2 text-xs text-muted-foreground">{weight.name}</p>
               </div>
             ))}
           </div>
-          <div className="flex flex-col gap-2 rounded-4xl bg-muted p-6">
+          <div className="flex flex-col gap-2 rounded-surface bg-muted p-6">
             <p className="text-xl font-semibold tracking-tight">Título da seção</p>
             <p className="text-sm text-muted-foreground">
               Texto de apoio em cinza secundário. Enfraquecer o que é secundário cria hierarquia sem
@@ -253,7 +249,7 @@ export function VisualIdentity() {
             {ICONS.map(({ name, icon: Icon }) => (
               <div
                 key={name}
-                className="flex aspect-square flex-col items-center justify-center gap-2 rounded-3xl bg-muted"
+                className="flex aspect-square flex-col items-center justify-center gap-2 rounded-field bg-muted"
               >
                 <Icon className="size-6" aria-hidden="true" />
                 <span className="max-w-full truncate px-1 text-[10px] text-muted-foreground">
@@ -262,7 +258,7 @@ export function VisualIdentity() {
               </div>
             ))}
           </div>
-          <div className="flex flex-wrap items-center gap-8 rounded-4xl bg-muted p-6">
+          <div className="flex flex-wrap items-center gap-8 rounded-surface bg-muted p-6">
             {ICON_SIZES.map((item) => (
               <div key={item.size} className="flex flex-col items-center gap-2">
                 <HeartIcon className={item.size} aria-hidden="true" />
@@ -282,12 +278,15 @@ export function VisualIdentity() {
 
         <Block id="formas" title="Formas" note="Formas suaves, como a logo">
           <div className="flex flex-col gap-3">
-            <Label>Escala de raios</Label>
-            <div className="grid grid-cols-5 gap-3">
+            <Label>
+              Escala de raios: cada nível interno tem o raio do externo menos o espaço entre eles
+            </Label>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {RADII.map((radius) => (
                 <div key={radius.name} className="flex flex-col items-center gap-2">
                   <div className={cn("aspect-square w-full bg-foreground/15", radius.className)} />
                   <span className="font-mono text-xs text-muted-foreground">{radius.name}</span>
+                  <span className="text-center text-xs text-muted-foreground">{radius.note}</span>
                 </div>
               ))}
             </div>
@@ -298,18 +297,18 @@ export function VisualIdentity() {
             <div className="grid gap-3 md:grid-cols-2">
               <Card className="gap-4">
                 <CardHeader>
-                  <CardTitle>Card · 4xl</CardTitle>
+                  <CardTitle>Card · surface</CardTitle>
                   <CardDescription>Superfícies maiores têm o raio mais generoso.</CardDescription>
                 </CardHeader>
               </Card>
-              <div className="flex flex-col justify-center gap-3 rounded-4xl bg-muted p-6">
+              <div className="flex flex-col justify-center gap-3 rounded-surface bg-muted p-6">
                 <div className="flex flex-wrap items-center gap-2">
                   <Button>Botão · pílula</Button>
                   <Button variant="outline">Contorno</Button>
                   <Button variant="secondary">Secundário</Button>
                   <Button variant="ghost">Texto</Button>
                 </div>
-                <Input placeholder="Campo · 3xl" aria-label="Exemplo de campo" />
+                <Input placeholder="Campo · field" aria-label="Exemplo de campo" />
                 <div className="flex items-center gap-3">
                   <Badge>Badge</Badge>
                   <Badge variant="secondary">Secundário</Badge>
