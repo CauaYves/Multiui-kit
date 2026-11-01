@@ -17,6 +17,32 @@
   --color-code-number: var(--code-number);
   --color-selection: var(--selection);
   --color-selection-foreground: var(--selection-foreground);
+  --color-line: var(--line);
+}
+
+/* Animações da vitrine da home (components/home-showcase.tsx). */
+@theme {
+  --animate-showcase-in: showcase-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-grow-in: grow-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+  @keyframes showcase-in {
+    from {
+      opacity: 0;
+      filter: blur(6px);
+      transform: translateY(8px) scale(0.98);
+    }
+  }
+  /* Filho novo num grupo: abre espaço e aparece. */
+  @keyframes grow-in {
+    from {
+      grid-template-rows: 0fr;
+      opacity: 0;
+      filter: blur(4px);
+    }
+    to {
+      grid-template-rows: 1fr;
+    }
+  }
 }
 
 :root {
@@ -28,6 +54,7 @@
   --code-number: oklch(0.56 0 0);
   --selection: oklch(0% 0 0);
   --selection-foreground: oklch(1 0 0);
+  --line: oklch(0.145 0 0 / 0.08);
 }
 
 .dark {
@@ -39,6 +66,7 @@
   --code-number: oklch(0.72 0 0);
   --selection: oklch(0.922 0 0);
   --selection-foreground: oklch(0.205 0 0);
+  --line: oklch(1 0 0 / 0.1);
 }
 
 @layer base {
@@ -58,6 +86,18 @@
 
 @utility container-wrapper {
   @apply mx-auto w-full px-2;
+}
+
+/* Hachura diagonal das faixas entre seções, como em tailwindcss.com. */
+@utility bg-hatch {
+  background-image: repeating-linear-gradient(315deg, var(--line) 0 1px, transparent 0 50%);
+  background-size: 10px 10px;
+  background-attachment: fixed;
+}
+
+@utility bg-dot-grid {
+  background-image: radial-gradient(var(--line) 1px, transparent 1px);
+  background-size: 16px 16px;
 }
 
 @utility no-scrollbar {
