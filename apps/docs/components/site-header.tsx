@@ -6,17 +6,18 @@ import { MainNav } from "@/components/main-nav";
 import { MobileNav } from "@/components/mobile-nav";
 import { ModeSwitcher } from "@/components/mode-switcher";
 import { SiteHeaderShell } from "@/components/site-header-shell";
-import { getComponentPages, SECTIONS, toNavItem } from "@/lib/docs";
+import { getComponentNav, SECTIONS } from "@/lib/docs";
 
 const NAV_ITEMS = [
   { title: "Docs", url: "/docs" },
-  { title: "Componentes", url: "/docs/components" },
+  { title: "Components", url: "/docs/components" },
   { title: "Blocks", url: "/blocks" },
   { title: "Create", url: "/create" },
+  { title: "Interfaces", url: "/interfaces" },
 ];
 
 export function SiteHeader() {
-  const components = getComponentPages().map(toNavItem);
+  const { components } = getComponentNav();
 
   return (
     <SiteHeaderShell>

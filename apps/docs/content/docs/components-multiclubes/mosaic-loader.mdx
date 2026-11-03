@@ -1,0 +1,49 @@
+---
+title: Mosaic Loader
+description: Carregamento em mosaico: a imagem da marca em 3×3 peças que pulsam em onda, ideal para troca de página.
+---
+
+<ComponentPreview name="mosaic-loader-demo" />
+
+## Installation
+
+<Installation name="mosaic-loader" />
+
+As animações ficam no `@multiclubes/ui/styles.css`, que o projeto já importa com o tema.
+
+## Usage
+
+```tsx
+import { MosaicLoader } from "@multiclubes/ui/components/mosaic-loader"
+```
+
+```tsx
+<MosaicLoader />
+```
+
+## Como funciona
+
+- **Peças em onda:** a imagem é dividida em 3×3 peças. Cada uma some e volta ao tamanho cheio, com atraso em diagonal, então a onda atravessa a imagem de um canto ao outro.
+- **Imagem padrão:** o ícone da marca. Passe `src` para usar outra imagem.
+- **Acessível:** o componente tem `role="status"` e um rótulo para leitores de tela. Com movimento reduzido, as peças ficam paradas e inteiras.
+- **Só CSS:** sem biblioteca de animação.
+
+## Troca de página
+
+Com `overlay`, o loader cobre a tela com um fundo translúcido e desfocado. Mostre-o enquanto a página seguinte carrega.
+
+<ComponentPreview name="mosaic-loader-overlay" previewClassName="h-40" />
+
+## Imagem e tamanho
+
+O tamanho vem do `className` (`size-22` por padrão).
+
+<ComponentPreview name="mosaic-loader-image" />
+
+## API Reference
+
+| Prop | Tipo | Padrão | Descrição |
+| --- | --- | --- | --- |
+| `src` | `string` | ícone da marca | Imagem a dividir em peças. |
+| `overlay` | `boolean` | `false` | Cobre a tela com fundo translúcido e desfocado. |
+| `label` | `string` | `"Carregando"` | Texto para leitores de tela. |

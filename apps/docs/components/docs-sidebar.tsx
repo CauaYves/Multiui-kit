@@ -44,9 +44,15 @@ function SidebarLink({ item, isActive }: { item: NavItem; isActive: boolean }) {
 
 export function DocsSidebar({
   sections,
+  brand,
   components,
   ...props
-}: React.ComponentProps<typeof Sidebar> & { sections: NavItem[]; components: NavItem[] }) {
+}: React.ComponentProps<typeof Sidebar> & {
+  sections: NavItem[];
+  /** Componentes de marca: ficam fora da lista e marcam "Marca" como ativo em Seções. */
+  brand: NavItem[];
+  components: NavItem[];
+}) {
   const pathname = usePathname();
 
   return (
@@ -68,7 +74,12 @@ export function DocsSidebar({
                   key={item.url}
                   item={item}
                   isActive={
-                    item.url === "/docs" ? pathname === item.url : pathname.startsWith(item.url)
+                    item.url === "/docs"
+                      ? pathname === item.url
+                      : pathname.startsWith(item.url) ||
+                        // As páginas dos componentes de marca ficam sob "Marca".
+                        (item.url === "/docs/marca" &&
+                          brand.some((entry) => entry.url === pathname))
                   }
                 />
               ))}

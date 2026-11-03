@@ -1,0 +1,43 @@
+---
+title: Backdrop Text
+description: Superfície com uma palavra gigante e apagada ao fundo, para dar identidade a uma seção.
+---
+
+<ComponentPreview name="backdrop-text-demo" />
+
+## Installation
+
+<Installation name="backdrop-text" />
+
+## Usage
+
+```tsx
+import { BackdropText } from "@multiclubes/ui/components/backdrop-text"
+```
+
+```tsx
+<BackdropText text="Clientes" className="rounded-surface bg-muted">
+  {/* conteúdo opcional, por cima da palavra */}
+</BackdropText>
+```
+
+## Como funciona
+
+- **Só a superfície:** o componente é a div com a palavra ao fundo, recortada pelas bordas. Tamanho, fundo e raio vêm do `className`; o que vier em `children` fica por cima da palavra.
+- **Decorativa:** a palavra fica fora da árvore de acessibilidade, sem seleção e sem clique.
+- **Uma palavra curta:** o tamanho acompanha a largura do próprio bloco. Palavras longas passam da largura e são recortadas.
+
+## Cores e posição
+
+A cor padrão da palavra é o `foreground` a 6%, para fundos neutros. Sobre um fundo colorido, troque com `textClassName` (`text-primary/10`). `position` aceita `top-end` (padrão), `top-start`, `bottom-end`, `bottom-start` e `center`.
+
+<ComponentPreview name="backdrop-text-colors" />
+
+## API Reference
+
+| Prop | Tipo | Padrão | Descrição |
+| --- | --- | --- | --- |
+| `text` | `string` | — | A palavra do fundo. |
+| `position` | `"top-end" \| "top-start" \| "bottom-end" \| "bottom-start" \| "center"` | `"top-end"` | Canto em que a palavra se encosta. |
+| `textClassName` | `string` | — | Classes da palavra, para trocar cor ou tamanho. |
+| `children` | `ReactNode` | — | Conteúdo por cima da palavra. |

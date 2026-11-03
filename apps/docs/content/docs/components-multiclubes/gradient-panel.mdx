@@ -1,0 +1,29 @@
+---
+title: Gradient Panel
+description: Superfície de seção com um brilho amarelo suave no canto, para destacar um bloco de conteúdo.
+---
+
+<ComponentPreview name="gradient-panel-demo" />
+
+## Installation
+
+<Installation name="gradient-panel" />
+
+## Usage
+
+```tsx
+import { GradientPanel } from "@multiclubes/ui/components/gradient-panel"
+```
+
+```tsx
+<GradientPanel aria-labelledby="titulo-da-secao">
+  <h2 id="titulo-da-secao">Título da seção</h2>
+  {/* conteúdo da seção */}
+</GradientPanel>
+```
+
+## Como funciona
+
+- **Só a superfície:** o painel é um `<section>` com fundo, raio, sombra e padding. O conteúdo e o layout interno ficam com quem usa. Dê um nome à seção (`aria-labelledby` apontando para o título, ou `aria-label`) para leitores de tela.
+- **Dois brilhos:** o `highlight` no canto superior esquerdo e um toque do `primary` no canto oposto, os dois desfeitos no `card`. No modo escuro eles ficam mais fracos para não lavar o fundo.
+- **Cores trocáveis:** os brilhos vêm de `--gradient-panel-glow` e `--gradient-panel-tint`. Troque com `className`, por exemplo `[--gradient-panel-glow:color-mix(in_oklab,var(--color-chart-3)_20%,transparent)]`.

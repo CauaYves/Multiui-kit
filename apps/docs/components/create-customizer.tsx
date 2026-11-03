@@ -149,8 +149,17 @@ function block(selector: string, vars: Record<string, string>) {
 
 /** CSS com o que muda em relação ao tema padrão. */
 function themeCss(color: Color, radius: string, root = ":root", dark = ".dark") {
-  const rootVars = { ...(radius !== DEFAULT_RADIUS && { radius: `${radius}rem` }), ...color.light };
-  return [block(root, rootVars), block(dark, color.dark ?? {})].filter(Boolean).join("\n\n");
+  // Os gráficos são monocromáticos na cor da marca (--chart-brand, e --chart-1..5 derivam
+  // dela). Com outra cor escolhida, eles passam a seguir o primary nos dois modos.
+  const chart: Record<string, string> = color.light ? { "chart-brand": "var(--primary)" } : {};
+  const rootVars = {
+    ...(radius !== DEFAULT_RADIUS && { radius: `${radius}rem` }),
+    ...color.light,
+    ...chart,
+  };
+  return [block(root, rootVars), block(dark, { ...color.dark, ...chart })]
+    .filter(Boolean)
+    .join("\n\n");
 }
 
 /** Trecho do app/layout.tsx que carrega as fontes escolhidas, ou null se nada muda. */
@@ -345,11 +354,9 @@ export function CreateCustomizer({ fonts }: { fonts: CreateFont[] }) {
           <ThemeDialog css={css} layout={layout} iconProvider={iconProvider} />
         </div>
       </aside>
-      <section
-        aria-label="Prévia"
-        className="flex min-h-128 min-w-0 flex-1 flex-col overflow-hidden rounded-surface border"
-      >
-        <div className="flex items-center gap-3 border-b bg-background px-4 py-3">
+      <section aria-label="Prévia" className="flex min-h-128 min-w-0 flex-1 flex-col gap-4">
+        {/* Mesma casca dos Blocos: barra solta acima da prévia, sem moldura em volta. */}
+        <div className="flex items-center gap-3 px-1 pt-1">
           <div className="flex min-w-0 flex-1 flex-col">
             <h1 className="truncate text-sm font-medium">{item.title}</h1>
             <p className="truncate text-xs text-muted-foreground">{item.description}</p>
@@ -358,35 +365,37 @@ export function CreateCustomizer({ fonts }: { fonts: CreateFont[] }) {
             Dados ilustrativos
           </Badge>
           <ToggleGroup
-            variant="outline"
             size="sm"
             aria-label="Largura da prévia"
             value={[viewport]}
             onValueChange={(next) => next[0] && setViewport(next[0])}
-            className="hidden md:flex"
+            className="hidden rounded-field bg-muted p-0.5 md:flex"
           >
             {VIEWPORTS.map(({ value, label, icon: Icon }) => (
-              <ToggleGroupItem key={value} value={value} aria-label={label} title={label}>
+              <ToggleGroupItem
+                key={value}
+                value={value}
+                aria-label={label}
+                title={label}
+                className="size-7 min-w-7 px-0"
+              >
                 <Icon />
               </ToggleGroupItem>
             ))}
           </ToggleGroup>
-          <Button
-            variant="outline"
-            size="sm"
-            nativeButton={false}
-            render={<Link href={item.docs} />}
-          >
+          <Button variant="ghost" size="sm" nativeButton={false} render={<Link href={item.docs} />}>
             Documentação
             <ArrowSquareOutIcon data-icon="inline-end" />
           </Button>
         </div>
-        <div className="flex flex-1 overflow-auto bg-muted/40 p-4 sm:p-8">
+        <div className="flex flex-1 overflow-auto p-1">
           <style>{previewCss}</style>
           <div
             data-create-preview
             className="@container/preview m-auto w-full transition-[max-width] duration-300"
-            style={{ maxWidth: width }}
+            // O zoom reduz tudo, inclusive a largura que as container queries enxergam: com
+            // 0,7 a mesma área cabe mais colunas.
+            style={{ maxWidth: width, zoom: item.zoom }}
           >
             <IconContext.Provider value={iconContext}>
               <Preview />

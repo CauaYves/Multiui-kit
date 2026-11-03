@@ -19,6 +19,7 @@ Não trate tudo como regra fechada.
 - Cores da marca, extraídas da logo: **amarelo `#fee502`** e **azul `#0540c5`**.
 - Use o azul para a ação principal e o amarelo para, no máximo, um elemento de destaque por peça. Não invente outras cores de marca.
 - Texto sobre amarelo deve ser escuro. Texto sobre azul deve ser claro. Confira o contraste.
+- Texto institucional oficial, para apresentar a empresa sem reescrever: "A Multiclubes desenvolve soluções integradas de software e hardware para clubes, parques e atrações, conectando gestão, operação e experiência em um ecossistema completo." Outras peças do site estão em `docs/referencias/site-institucional.md` do repositório.
 
 ### Cores neutras
 

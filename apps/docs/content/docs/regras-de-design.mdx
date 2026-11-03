@@ -57,15 +57,7 @@ Pergunte com que frequência a ação acontece. Algo que a pessoa faz centenas d
 
 Animações de interface devem ficar abaixo de cerca de 300 ms. Para entrada e saída, prefira `ease-out`, que responde logo e desacelera no fim. Evite `ease-in` em interface: o início lento parece demora. As curvas nativas do CSS são fracas, então vale definir uma curva própria.
 
-**Regra no Mosaico:** duração e curva devem ser tokens, para que todos os componentes se movam do mesmo jeito. Isso ainda não existe no tema: hoje cada componente define a própria duração (os overlays usam `duration-100`). A proposta:
-
-```css
-:root {
-  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-  --duration-fast: 150ms;
-  --duration-base: 220ms;
-}
-```
+**Regra no Mosaico:** duração e curva são tokens (veja "Transições fluidas" abaixo). Os overlays do kit ainda usam `duration-100` com as animações do `tw-animate-css`.
 
 ### Nunca comece em scale(0)
 
@@ -153,3 +145,13 @@ Antes de abrir o PR de um componente ou de uma mudança visual:
 - [Refactoring UI](https://www.refactoringui.com), de Adam Wathan e Steve Schoger.
 - [Emil Kowalski](https://emilkowal.ski), com os artigos sobre animação em interfaces, e o curso [Animations on the Web](https://animations.dev).
 - [shadcn/ui](https://ui.shadcn.com/docs), documentação e princípios de projeto.
+
+## Transições fluidas
+
+Inspiradas nas transições do Liquid Glass da Apple: o elemento chega de forma orgânica, um pouco menor (`scale(0.965)`) e levemente desfocado, e assenta nítido com uma mola suave que passa cerca de 2% do tamanho final. Nunca parte de `scale(0)`, e só anima `transform`, `opacity` e `filter`.
+
+Tokens, classes, exemplo de código e as demais durações do kit estão em [Animações](/docs/animacoes).
+
+**Use em:** entrada de página, listas e grades que aparecem de uma vez, e blocos que entram ao rolar.
+
+**Não use em:** feedback de toque (use `active:scale-[0.97]`, curto) nem em elementos repetidos a cada interação, como abrir um menu, trocar de aba ou digitar. Nesses casos a animação vira atraso.

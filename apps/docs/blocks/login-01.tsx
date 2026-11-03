@@ -137,17 +137,7 @@ function SignInForm() {
           {errors.email && <FieldError>{errors.email}</FieldError>}
         </Field>
         <Field data-invalid={Boolean(errors.password)}>
-          <div className="flex items-center justify-between">
-            <FieldLabel htmlFor="login-01-password">Senha</FieldLabel>
-            {/* Links de exemplo: a aplicação troca por rotas de verdade. */}
-            <Button
-              type="button"
-              variant="link"
-              className="h-auto p-0 text-sm font-normal text-muted-foreground hover:text-foreground"
-            >
-              Esqueceu a senha?
-            </Button>
-          </div>
+          <FieldLabel htmlFor="login-01-password">Senha</FieldLabel>
           <InputGroup className="h-11 lg:h-9">
             <InputGroupInput
               id="login-01-password"
@@ -168,6 +158,18 @@ function SignInForm() {
             </InputGroupAddon>
           </InputGroup>
           {errors.password && <FieldError>{errors.password}</FieldError>}
+          {/* Abaixo do campo, depois do erro: quem esqueceu a senha percebe isso ao tentar
+              digitá-la. O Field estica os filhos na largura toda, então o div alinha o link
+              à direita. Link de exemplo: a aplicação troca por uma rota de verdade. */}
+          <div className="flex justify-end">
+            <Button
+              type="button"
+              variant="link"
+              className="h-auto p-0 text-sm font-normal text-muted-foreground hover:text-foreground"
+            >
+              Esqueceu a senha?
+            </Button>
+          </div>
         </Field>
         {/* Preto no claro e branco no escuro: a cor do texto, não a da marca. */}
         <Button

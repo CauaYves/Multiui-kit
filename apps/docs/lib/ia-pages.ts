@@ -2,6 +2,7 @@
 export const PRINCIPLE_PAGES: string[][] = [
   ["para-ia"],
   ["regras-de-design"],
+  ["animacoes"],
   ["por-que-um-design-system"],
   ["installation"],
 ];

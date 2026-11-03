@@ -1,5 +1,6 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { getComponentCategory } from "@/lib/component-categories";
 
 export type DocLinks = { doc?: string; api?: string };
 
@@ -36,8 +37,10 @@ export const SECTIONS: NavItem[] = [
   { title: "Introdução", url: "/docs", group: "docs" },
   { title: "Por que um design system", url: "/docs/por-que-um-design-system", group: "principios" },
   { title: "Regras de design", url: "/docs/regras-de-design", group: "principios" },
+  { title: "Animações", url: "/docs/animacoes", group: "principios" },
   { title: "Para IA", url: "/docs/para-ia", group: "ia" },
   { title: "Componentes", url: "/docs/components", group: "docs" },
+  { title: "Marca", url: "/docs/marca", group: "docs" },
   { title: "Instalação", url: "/docs/installation", group: "docs" },
 ];
 
@@ -120,7 +123,20 @@ export function getComponentPages(): DocPage[] {
 
 /** Item de navegação de uma página de componente. */
 export function toNavItem(page: DocPage): NavItem {
-  return { title: page.title, url: page.url, badge: page.multiclubes ? "Multiclubes" : undefined };
+  return { title: page.title, url: page.url };
+}
+
+/**
+ * Itens da navegação: os componentes de marca (categoria "Marca") ganham uma seção própria
+ * na barra lateral e saem da lista geral de componentes.
+ */
+export function getComponentNav(): { brand: NavItem[]; components: NavItem[] } {
+  const pages = getComponentPages();
+  const isBrand = (page: DocPage) => getComponentCategory(page.slug.at(-1) ?? "") === "Marca";
+  return {
+    brand: pages.filter(isBrand).map(toNavItem),
+    components: pages.filter((page) => !isBrand(page)).map(toNavItem),
+  };
 }
 
 export function getPage(slug: string[]) {

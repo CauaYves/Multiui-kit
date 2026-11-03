@@ -17,6 +17,57 @@
   --color-code-number: var(--code-number);
   --color-selection: var(--selection);
   --color-selection-foreground: var(--selection-foreground);
+  --color-line: var(--line);
+}
+
+/* Animações da vitrine da home (components/home/presentation-showcase.tsx). */
+@theme {
+  --animate-showcase-in: showcase-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-grow-in: grow-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-cota-x: cota-x 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-cota-y: cota-y 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+  /* Cota que se desenha do centro para as pontas. */
+  @keyframes cota-x {
+    from {
+      opacity: 0;
+      transform: scaleX(0);
+    }
+  }
+  @keyframes cota-y {
+    from {
+      opacity: 0;
+      transform: scaleY(0);
+    }
+  }
+
+  @keyframes showcase-in {
+    from {
+      opacity: 0;
+      filter: blur(6px);
+      transform: translateY(8px) scale(0.98);
+    }
+  }
+  /* Filho novo num grupo: abre espaço e aparece. */
+  @keyframes grow-in {
+    from {
+      grid-template-rows: 0fr;
+      opacity: 0;
+      filter: blur(4px);
+    }
+    to {
+      grid-template-rows: 1fr;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-showcase-in,
+  .animate-grow-in,
+  .animate-cota-x,
+  .animate-cota-y {
+    animation: none;
+  }
 }
 
 :root {
@@ -28,6 +79,7 @@
   --code-number: oklch(0.56 0 0);
   --selection: oklch(0% 0 0);
   --selection-foreground: oklch(1 0 0);
+  --line: oklch(0.145 0 0 / 0.08);
 }
 
 .dark {
@@ -39,6 +91,7 @@
   --code-number: oklch(0.72 0 0);
   --selection: oklch(0.922 0 0);
   --selection-foreground: oklch(0.205 0 0);
+  --line: oklch(1 0 0 / 0.1);
 }
 
 @layer base {
@@ -58,6 +111,11 @@
 
 @utility container-wrapper {
   @apply mx-auto w-full px-2;
+}
+
+@utility bg-dot-grid {
+  background-image: radial-gradient(var(--line) 1px, transparent 1px);
+  background-size: 16px 16px;
 }
 
 @utility no-scrollbar {

@@ -4,8 +4,10 @@ import { Avatar, AvatarFallback } from "@multiclubes/ui/components/avatar";
 import {
   Breadcrumb,
   BreadcrumbItem,
+  BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
+  BreadcrumbSeparator,
 } from "@multiclubes/ui/components/breadcrumb";
 import { Button } from "@multiclubes/ui/components/button";
 import {
@@ -23,7 +25,6 @@ import {
   DropdownMenuTrigger,
 } from "@multiclubes/ui/components/dropdown-menu";
 import { Kbd } from "@multiclubes/ui/components/kbd";
-import { Separator } from "@multiclubes/ui/components/separator";
 import {
   Sidebar,
   SidebarContent,
@@ -38,10 +39,10 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   SidebarProvider,
-  SidebarRail,
   SidebarTrigger,
   useSidebar,
 } from "@multiclubes/ui/components/sidebar";
+import { ThemeToggle } from "@multiclubes/ui/components/theme-toggle";
 import {
   CaretDownIcon,
   CaretRightIcon,
@@ -49,74 +50,106 @@ import {
   type Icon,
   ListIcon,
   MagnifyingGlassIcon,
-  MoonIcon,
-  ScanSmileyIcon,
   SignOutIcon,
   SquaresFourIcon,
-  StorefrontIcon,
-  SunIcon,
-  TicketIcon,
   UserIcon,
-  UserSoundIcon,
   XIcon,
 } from "@phosphor-icons/react";
 import { cn } from "cn";
 import { useTheme } from "next-themes";
-import type * as React from "react";
+import * as React from "react";
 import { LogoMark, LogoWordmark } from "@/components/logo";
 
-// Aside do Dashboard, versão em que a página vira um cartão sobre o fundo do aside.
+// Casca de aplicação: o aside e o header, que dependem um do outro pelo SidebarProvider
+// (o header abre e fecha o aside). Versão em que a página vira um cartão sobre o fundo do
+// aside.
 // Dados ilustrativos.
 const USER = { name: "Usuário", email: "usuario@exemplo.com", initials: "US" };
 
 type NavItem = {
   title: string;
   url: string;
-  icon: Icon;
-  active?: boolean;
   items?: { title: string; url: string }[];
 };
 
+// Rotas genéricas: o bloco mostra a estrutura do aside, não as páginas de um produto.
+// Todas têm o mesmo nome e o mesmo ícone, e só a última tem subpáginas.
+const NAV_ICON: Icon = SquaresFourIcon;
+
 const NAV: NavItem[] = [
-  { title: "Visão Geral", url: "#visao-geral", icon: SquaresFourIcon, active: true },
-  { title: "Acessos", url: "#acessos", icon: ScanSmileyIcon },
+  { title: "Route", url: "#route-1" },
+  { title: "Route", url: "#route-2" },
+  { title: "Route", url: "#route-3" },
+  { title: "Route", url: "#route-4" },
   {
-    title: "Consumo",
-    url: "#consumo",
-    icon: StorefrontIcon,
+    title: "Route",
+    url: "#route-5",
     items: [
-      { title: "Curva ABC", url: "#curva-abc" },
-      { title: "Mais vendidos", url: "#mais-vendidos" },
+      { title: "Page", url: "#page-1" },
+      { title: "Page", url: "#page-2" },
     ],
   },
-  { title: "Ingressos", url: "#ingressos", icon: TicketIcon },
-  { title: "Promotores", url: "#promotores", icon: UserSoundIcon },
 ];
+
+/** A rota de uma URL e, se ela for de uma subpágina, a página. */
+function findRoute(url: string) {
+  for (const route of NAV) {
+    if (route.url === url) return { route };
+    const page = route.items?.find((item) => item.url === url);
+    if (page) return { route, page };
+  }
+  return { route: NAV[0] };
+}
+
+/** A rota selecionada, que o aside marca e o header mostra no breadcrumb. */
+type NavProps = { active: string; onSelect: (url: string) => void };
+
+/**
+ * Seleciona uma rota pelo clique. As rotas são de exemplo, então o link não navega: só
+ * troca a seleção. No celular, escolher uma rota também fecha a gaveta.
+ */
+function useSelectRoute(onSelect: NavProps["onSelect"]) {
+  const { isMobile, setOpenMobile } = useSidebar();
+
+  return (url: string) => (event: React.MouseEvent) => {
+    event.preventDefault();
+    onSelect(url);
+    if (isMobile) setOpenMobile(false);
+  };
+}
 
 // O aside tem dois estados, selecionado e não selecionado. O hover pintaria um terceiro,
 // que numa lista curta lê como "meio selecionado".
 const NO_HOVER = "hover:bg-transparent hover:text-sidebar-foreground";
-const ACTIVE = "data-active:bg-primary data-active:text-primary-foreground";
+// O item selecionado é azul também sob o mouse e no clique: o botão do kit tem hover e
+// active próprios (bg-sidebar-accent), que no CSS venceriam o data-active e deixariam o item
+// recém-clicado cinza até o mouse sair dele. Por isso o "!".
+const ACTIVE = "data-active:bg-primary! data-active:text-primary-foreground!";
 
-export default function Dashboard01() {
+export default function Sidebar01() {
+  // A rota selecionada fica acima do aside e do header: o aside marca o item e o header
+  // mostra o caminho no breadcrumb.
+  const [active, setActive] = React.useState(NAV[0].url);
+
   return (
     // O fundo do provider é a cor do aside: é ele que aparece na folga em volta da página.
     <SidebarProvider className="bg-sidebar">
-      <AppSidebar />
+      <AppSidebar active={active} onSelect={setActive} />
       <InsetShell>
-        <AppHeader />
-        {/* Moldes no lugar do conteúdo. */}
-        <main className="flex flex-1 flex-col gap-4 overflow-y-auto p-4 sm:p-6">
-          <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
+        <AppHeader active={active} onSelect={setActive} />
+        {/* Moldes no lugar do conteúdo. Cabem na altura da tela: a página não rola, e as
+            duas últimas linhas dividem o espaço que sobra abaixo dos cartões. */}
+        <main className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden p-4 sm:p-6">
+          <div className="grid shrink-0 grid-cols-2 gap-4 xl:grid-cols-4">
             {["a", "b", "c", "d"].map((card) => (
               <div key={card} className="h-32 rounded-surface bg-muted/50" />
             ))}
           </div>
-          <div className="grid gap-4 lg:grid-cols-3">
-            <div className="aspect-video rounded-surface bg-muted/50 lg:col-span-2" />
-            <div className="aspect-video rounded-surface bg-muted/50" />
+          <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-3">
+            <div className="rounded-surface bg-muted/50 lg:col-span-2" />
+            <div className="rounded-surface bg-muted/50" />
           </div>
-          <div className="min-h-96 flex-1 rounded-surface bg-muted/50" />
+          <div className="min-h-0 flex-1 rounded-surface bg-muted/50" />
         </main>
       </InsetShell>
     </SidebarProvider>
@@ -124,21 +157,22 @@ export default function Dashboard01() {
 }
 
 /**
- * Casca da página. Com o aside aberto no desktop, a página vira um cartão apoiado sobre o
- * fundo do aside, com uma folga nas laterais e embaixo. Fechado, ou no celular (em que o
- * aside é uma gaveta), ela volta a encostar nas bordas.
+ * Casca da página. No desktop, aberto ou recolhido em ícones, a página vira um cartão
+ * apoiado sobre o fundo do aside: arredondado e com borda só do lado do aside (esquerdo),
+ * com uma folga entre os dois. Em cima, embaixo e à direita a casca não aparece, a página
+ * encosta nas bordas da tela. No celular, em que o aside é uma gaveta, ela encosta em
+ * todas as bordas.
  */
 function InsetShell({ className, ...props }: React.ComponentProps<"div">) {
-  const { state, isMobile } = useSidebar();
-  const inset = !isMobile && state === "expanded";
+  const { isMobile } = useSidebar();
+  const inset = !isMobile;
 
   return (
     <div
       data-inset={inset ? "on" : "off"}
       className={cn(
-        "relative flex min-h-svh w-full flex-1 flex-col bg-background transition-[margin,border-radius] duration-200 ease-linear motion-reduce:transition-none",
-        inset &&
-          "mx-2 mb-2 min-h-[calc(100svh-0.5rem)] overflow-hidden rounded-surface border border-sidebar-border shadow-sm",
+        "relative flex h-svh w-full flex-1 flex-col overflow-hidden bg-background transition-[margin,border-radius] duration-200 ease-linear motion-reduce:transition-none",
+        inset && "ml-2 rounded-l-surface shadow-sm",
         className,
       )}
       {...props}
@@ -146,7 +180,9 @@ function InsetShell({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
-function AppSidebar() {
+function AppSidebar({ active, onSelect }: NavProps) {
+  const select = useSelectRoute(onSelect);
+
   return (
     // Sem a borda do aside: quem separa o aside da página é a folga em volta do cartão.
     <Sidebar collapsible="icon" className="group-data-[side=left]:border-r-0">
@@ -156,10 +192,11 @@ function AppSidebar() {
             <SidebarMenuButton
               size="lg"
               aria-label="Multiclubes, início"
-              className={NO_HOVER}
-              render={<a href="#visao-geral" />}
+              className={cn("justify-center", NO_HOVER)}
+              render={<a href={NAV[0].url} onClick={select(NAV[0].url)} />}
             >
-              {/* Aberto mostra a logo com o nome; recolhido em ícones, só o "m". */}
+              {/* Aberto mostra a logo com o nome; recolhido em ícones, só o "m". Nos dois
+                  casos a logo fica centrada no aside. */}
               <LogoWordmark className="h-6! w-auto! shrink-0 group-data-[collapsible=icon]:hidden" />
               <LogoMark className="hidden size-7! shrink-0 group-data-[collapsible=icon]:block" />
             </SidebarMenuButton>
@@ -167,14 +204,14 @@ function AppSidebar() {
         </SidebarMenu>
         <SidebarCloseButton />
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="overflow-hidden">
         <SidebarGroup>
           <SidebarMenu>
             {NAV.map((item) =>
               item.items ? (
-                <NavGroup key={item.title} item={item} />
+                <NavGroup key={item.url} item={item} active={active} onSelect={onSelect} />
               ) : (
-                <NavLink key={item.title} item={item} />
+                <NavLink key={item.url} item={item} active={active} onSelect={onSelect} />
               ),
             )}
           </SidebarMenu>
@@ -187,22 +224,24 @@ function AppSidebar() {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
-      <SidebarRail />
     </Sidebar>
   );
 }
 
-function NavLink({ item }: { item: NavItem }) {
+function NavLink({ item, active, onSelect }: { item: NavItem } & NavProps) {
+  const select = useSelectRoute(onSelect);
+  const isActive = active === item.url;
+
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
-        isActive={item.active}
+        isActive={isActive}
         tooltip={item.title}
-        className={cn(ACTIVE, !item.active && NO_HOVER)}
-        render={<a href={item.url} />}
+        className={cn(ACTIVE, !isActive && NO_HOVER)}
+        render={<a href={item.url} onClick={select(item.url)} />}
       >
         {/* O ícone do item ativo fica preenchido, os outros em negrito. */}
-        <item.icon weight={item.active ? "fill" : "bold"} />
+        <NAV_ICON weight={isActive ? "fill" : "bold"} />
         <span>{item.title}</span>
       </SidebarMenuButton>
     </SidebarMenuItem>
@@ -213,17 +252,24 @@ function NavLink({ item }: { item: NavItem }) {
  * Item com subpáginas. A linha continua sendo um link para a página do item; quem abre e
  * fecha as subpáginas é a seta ao lado.
  */
-function NavGroup({ item }: { item: NavItem }) {
+function NavGroup({ item, active, onSelect }: { item: NavItem } & NavProps) {
+  const select = useSelectRoute(onSelect);
+  const isActive = active === item.url;
+
   return (
-    <Collapsible className="group/collapsible">
+    // Começa aberto quando a página selecionada é uma das subpáginas.
+    <Collapsible
+      className="group/collapsible"
+      defaultOpen={item.items?.some((page) => page.url === active)}
+    >
       <SidebarMenuItem>
         <SidebarMenuButton
-          isActive={item.active}
+          isActive={isActive}
           tooltip={item.title}
-          className={cn(ACTIVE, !item.active && NO_HOVER)}
-          render={<a href={item.url} />}
+          className={cn(ACTIVE, !isActive && NO_HOVER)}
+          render={<a href={item.url} onClick={select(item.url)} />}
         >
-          <item.icon weight={item.active ? "fill" : "bold"} />
+          <NAV_ICON weight={isActive ? "fill" : "bold"} />
           <span>{item.title}</span>
         </SidebarMenuButton>
         <CollapsibleTrigger
@@ -239,8 +285,12 @@ function NavGroup({ item }: { item: NavItem }) {
         <CollapsibleContent>
           <SidebarMenuSub>
             {item.items?.map((sub) => (
-              <SidebarMenuSubItem key={sub.title}>
-                <SidebarMenuSubButton className={NO_HOVER} render={<a href={sub.url} />}>
+              <SidebarMenuSubItem key={sub.url}>
+                <SidebarMenuSubButton
+                  className={cn(active !== sub.url && NO_HOVER)}
+                  isActive={active === sub.url}
+                  render={<a href={sub.url} onClick={select(sub.url)} />}
+                >
                   <span>{sub.title}</span>
                 </SidebarMenuSubButton>
               </SidebarMenuSubItem>
@@ -253,36 +303,48 @@ function NavGroup({ item }: { item: NavItem }) {
 }
 
 /**
- * No tablet o aside aberto fica por cima do conteúdo e cobre o botão do header. Este botão
- * aparece só com o aside aberto e abaixo de lg, para fechar sem depender do atalho.
+ * Botão de fechar o aside abaixo de lg. No tablet, o aside aberto fica por cima do conteúdo
+ * e cobre o botão do header; no celular, o aside é uma gaveta e o overlay cobre o botão de
+ * menu do header. Nos dois casos, este botão fecha sem depender do atalho. No desktop, e
+ * com o aside recolhido em ícones, ele não aparece.
  */
 function SidebarCloseButton() {
-  const { setOpen } = useSidebar();
+  const { isMobile, setOpen, setOpenMobile } = useSidebar();
 
   return (
     <Button
       variant="ghost"
-      size="icon-xs"
+      size="icon-sm"
       aria-label="Fechar menu"
-      onClick={() => setOpen(false)}
-      className="absolute top-2 right-2 z-20 hidden max-lg:group-data-[state=expanded]:flex"
+      onClick={() => (isMobile ? setOpenMobile(false) : setOpen(false))}
+      className={cn(
+        "absolute top-1/2 right-2 z-20 -translate-y-1/2",
+        !isMobile && "hidden max-lg:group-data-[state=expanded]:flex",
+      )}
     >
       <XIcon />
     </Button>
   );
 }
 
-function AppHeader() {
+function AppHeader({ active, onSelect }: NavProps) {
   const { openMobile, setOpenMobile } = useSidebar();
+  const select = useSelectRoute(onSelect);
+  const { route, page } = findRoute(active);
 
   return (
-    <header className="relative z-10 h-14 w-full shrink-0 border-b bg-background">
+    <header className="relative z-10 h-14 w-full shrink-0 bg-background">
       {/* Celular: tema, logo no centro e o menu. A grade de 3 colunas mantém a logo centrada. */}
       <div className="grid h-full grid-cols-3 items-center px-4 md:hidden">
         <div className="flex justify-start">
           <ThemeButton />
         </div>
-        <a href="#visao-geral" className="flex justify-center" aria-label="Início">
+        <a
+          href={NAV[0].url}
+          onClick={select(NAV[0].url)}
+          className="flex justify-center"
+          aria-label="Início"
+        >
           <LogoMark className="size-7" />
         </a>
         <div className="flex justify-end">
@@ -302,9 +364,24 @@ function AppHeader() {
         <SidebarTrigger className="-ml-1" />
         <Breadcrumb className="min-w-0 flex-1">
           <BreadcrumbList>
+            {/* Numa subpágina, a rota vira um link de volta e a página é o item atual. */}
             <BreadcrumbItem>
-              <BreadcrumbPage>Visão Geral</BreadcrumbPage>
+              {page ? (
+                <BreadcrumbLink render={<a href={route.url} onClick={select(route.url)} />}>
+                  {route.title}
+                </BreadcrumbLink>
+              ) : (
+                <BreadcrumbPage>{route.title}</BreadcrumbPage>
+              )}
             </BreadcrumbItem>
+            {page && (
+              <>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>{page.title}</BreadcrumbPage>
+                </BreadcrumbItem>
+              </>
+            )}
           </BreadcrumbList>
         </Breadcrumb>
         <Button
@@ -317,7 +394,6 @@ function AppHeader() {
           <Kbd className="ml-auto">Ctrl K</Kbd>
         </Button>
         <ThemeButton />
-        <Separator orientation="vertical" className="data-[orientation=vertical]:h-5" />
         <UserMenu variant="header" />
       </div>
     </header>
@@ -327,18 +403,8 @@ function AppHeader() {
 function ThemeButton() {
   const { resolvedTheme, setTheme } = useTheme();
 
-  return (
-    <Button
-      variant="ghost"
-      size="icon"
-      aria-label="Alternar tema"
-      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-    >
-      {/* Os dois ícones ficam no DOM e o CSS escolhe: sem diferença de hidratação. */}
-      <SunIcon className="hidden dark:block" />
-      <MoonIcon className="dark:hidden" />
-    </Button>
-  );
+  // Nos blocos a troca é direta, sem a animação do site.
+  return <ThemeToggle theme={resolvedTheme} onThemeChange={setTheme} animated={false} />;
 }
 
 /** Menu do usuário: linha completa no rodapé do aside, avatar com seta no header. */

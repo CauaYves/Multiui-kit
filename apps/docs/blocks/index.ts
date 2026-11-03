@@ -15,16 +15,18 @@ export const BLOCK_CATEGORIES = [
   { slug: "sidebar", title: "Sidebar" },
   { slug: "login", title: "Login" },
   { slug: "signup", title: "Signup" },
+  { slug: "editor", title: "Editor" },
+  { slug: "canvas", title: "Canvas" },
 ];
 
 export const BLOCKS: Block[] = [
   {
-    name: "dashboard-01",
+    name: "sidebar-01",
     description: "Sidebar que recolhe para ícones, com a página em cartão",
     categories: ["featured", "sidebar"],
   },
   {
-    name: "dashboard-02",
+    name: "sidebar-02",
     description: "Sidebar que recolhe para ícones, com a página encostada",
     categories: ["featured", "sidebar"],
   },
@@ -33,10 +35,29 @@ export const BLOCKS: Block[] = [
     description: "Login com imagem recortada por onda no desktop e no topo no celular",
     categories: ["login"],
   },
+  {
+    name: "signup-01",
+    description: "Criar conta, espelho do login: imagem à direita no desktop e onda invertida",
+    categories: ["signup"],
+  },
+  {
+    name: "editor-01",
+    description: "Editor com sidebar de projetos, caixa de comandos e canvas de pontos",
+    categories: ["featured", "editor"],
+  },
+  {
+    name: "canvas-01",
+    description:
+      "Casca de app com canvas: header com marca, seletor e busca, painel lateral com abas e lista, resumo e ferramentas flutuantes",
+    categories: ["featured", "canvas"],
+  },
 ];
 
 export const BlockLoaders: Record<string, () => Promise<{ default: React.ComponentType }>> = {
-  "dashboard-01": () => import("./dashboard-01"),
-  "dashboard-02": () => import("./dashboard-02"),
+  "sidebar-01": () => import("./sidebar-01"),
+  "sidebar-02": () => import("./sidebar-02"),
   "login-01": () => import("./login-01"),
+  "signup-01": () => import("./signup-01"),
+  "editor-01": () => import("./editor-01"),
+  "canvas-01": () => import("./canvas-01"),
 };

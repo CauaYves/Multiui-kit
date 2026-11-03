@@ -21,22 +21,19 @@ import {
   FieldSeparator,
 } from "@multiclubes/ui/components/field";
 import { Input } from "@multiclubes/ui/components/input";
-import { MetricCard } from "@multiclubes/ui/components/metric-card";
 import { NativeSelect, NativeSelectOption } from "@multiclubes/ui/components/native-select";
 import { Switch } from "@multiclubes/ui/components/switch";
 import {
   ArrowRightIcon,
   CheckIcon,
-  CurrencyCircleDollarIcon,
   DotsThreeIcon,
   DownloadSimpleIcon,
   PlusIcon,
-  ReceiptIcon,
   TrashIcon,
-  UserMinusIcon,
-  UsersThreeIcon,
 } from "@phosphor-icons/react";
 import * as React from "react";
+import { MarketingPreview } from "@/components/create-marketing";
+import { OverviewPreview } from "@/components/create-overview";
 
 export type CreateItem = {
   name: string;
@@ -47,17 +44,21 @@ export type CreateItem = {
   /** Outros termos que encontram o item na busca, como os componentes que ele usa. */
   keywords: string[];
   preview: React.ComponentType;
+  /** Escala da prévia (CSS zoom). Menor que 1 mostra mais componentes de uma vez. */
+  zoom?: number;
 };
 
 // Itens da prévia em /create. Todos os textos e valores são ilustrativos.
 export const CREATE_ITEMS: CreateItem[] = [
   {
-    name: "metric-card",
-    title: "Metric Card",
-    description: "Indicador para dashboards, com valor, ícone e variação.",
-    docs: "/docs/components/metric-card",
-    keywords: ["dashboard", "indicador", "kpi"],
-    preview: MetricCardPreview,
+    name: "overview",
+    title: "Visão geral",
+    description:
+      "Cabeçalho, gráficos de linha e barras, tabela, listas, estado vazio, conta, notas, chat, navegação, configurações, avatares e calendário.",
+    docs: "/docs/components",
+    keywords: ["dashboard", "gráfico", "linha", "tabela", "cabeçalho"],
+    preview: OverviewPreview,
+    zoom: 0.7,
   },
   {
     name: "button",
@@ -83,36 +84,24 @@ export const CREATE_ITEMS: CreateItem[] = [
     keywords: ["cartão", "superfície"],
     preview: CardPreview,
   },
+  {
+    name: "marketing",
+    title: "Marketing",
+    description:
+      "Página de apresentação com GradientPanel, BackdropText, BrandCard e carregadores da marca.",
+    docs: "/docs/components",
+    keywords: [
+      "marca",
+      "brand",
+      "gradient panel",
+      "backdrop text",
+      "mosaic loader",
+      "brand loader",
+      "hero",
+    ],
+    preview: MarketingPreview,
+  },
 ];
-
-function MetricCardPreview() {
-  return (
-    <div className="grid gap-4 @md/preview:grid-cols-2 @4xl/preview:grid-cols-4">
-      <MetricCard
-        icon={<CurrencyCircleDollarIcon />}
-        title="Receita"
-        value="R$ 12.345"
-        change="+10% vs período anterior"
-        trend="positive"
-      />
-      <MetricCard
-        icon={<UsersThreeIcon />}
-        title="Usuários ativos"
-        value="1.234"
-        change="+5% vs período anterior"
-        trend="positive"
-      />
-      <MetricCard icon={<ReceiptIcon />} title="Pedidos" value="567" change="Sem variação" />
-      <MetricCard
-        icon={<UserMinusIcon />}
-        title="Cancelamentos"
-        value="89"
-        change="-3% vs período anterior"
-        trend="negative"
-      />
-    </div>
-  );
-}
 
 function ButtonPreview() {
   return (

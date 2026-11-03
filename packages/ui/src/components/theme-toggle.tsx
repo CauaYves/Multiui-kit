@@ -20,12 +20,16 @@ function SunIcon(props: React.ComponentProps<"svg">) {
   );
 }
 
-/** Ícone padrão do modo escuro. */
+/**
+ * Ícone padrão do modo escuro. A lua preenche o próprio desenho, enquanto o sol tem os raios
+ * em volta de um disco menor: o viewBox quadrado com folga deixa a lua com ~76% da caixa,
+ * para os dois parecerem do mesmo tamanho no mesmo size-*.
+ */
 function MoonIcon(props: React.ComponentProps<"svg">) {
   return (
     <svg
       data-slot="moon-icon"
-      viewBox="0 0 221 231"
+      viewBox="-35 -30 291 291"
       fill="currentColor"
       aria-hidden="true"
       {...props}
@@ -51,6 +55,7 @@ function MoonIcon(props: React.ComponentProps<"svg">) {
 function ThemeToggle({
   theme,
   onThemeChange,
+  animated = true,
   className,
   onClick,
   ...props
@@ -58,6 +63,8 @@ function ThemeToggle({
   /** Tema em uso. Sem ele (antes da hidratação, por exemplo), vale a classe dark do <html>. */
   theme?: Theme | (string & {});
   onThemeChange: (theme: Theme) => void;
+  /** false troca o tema na hora, sem o círculo nem o giro do ícone (ex.: dentro de prévias). */
+  animated?: boolean;
 }) {
   const toggle = (event: Parameters<NonNullable<typeof onClick>>[0]) => {
     onClick?.(event);
@@ -66,7 +73,11 @@ function ThemeToggle({
     const root = document.documentElement;
     const isDark = theme ? theme === "dark" : root.classList.contains("dark");
     const next: Theme = isDark ? "light" : "dark";
-    if (!document.startViewTransition || matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (
+      !animated ||
+      !document.startViewTransition ||
+      matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
       onThemeChange(next);
       return;
     }

@@ -45,7 +45,7 @@ export function SiteHeaderShell({ children }: { children: React.ReactNode }) {
     <header ref={ref} data-solid={solid} className="group/header sticky top-0 z-50 w-full">
       <div
         aria-hidden
-        className="absolute inset-0 -z-10 origin-top border-b bg-background/90 shadow-xs backdrop-blur-lg transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-data-[solid=false]/header:scale-y-75 group-data-[solid=false]/header:opacity-0 motion-reduce:transition-none"
+        className="absolute inset-0 -z-10 origin-top bg-background/90 backdrop-blur-lg transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-data-[solid=false]/header:scale-y-75 group-data-[solid=false]/header:opacity-0 motion-reduce:transition-none"
       />
       <div className="transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-data-[solid=false]/header:translate-y-1.5 motion-reduce:transition-none">
         {children}
