@@ -68,16 +68,18 @@ export function WaveHero({ className, ...props }: React.ComponentProps<"div">) {
         {(
           [
             {
-              src: "/hero-tubo.webp",
-              srcSet: "/hero-tubo.webp 1600w, /hero-tubo-2x.webp 2900w",
+              src: "/hero-claro.webp",
+              srcSet: "/hero-claro.webp 1600w, /hero-claro-2x.webp 2860w",
               y: 1.02,
-              className: "dark:hidden",
+              // O brilho da arte encosta no topo do recorte: o degradê esconde essa borda.
+              className: "dark:hidden [mask-image:linear-gradient(to_bottom,transparent,#000_22%)]",
             },
             {
-              src: "/hero-tubo.webp",
-              srcSet: "/hero-tubo.webp 1600w, /hero-tubo-2x.webp 2900w",
+              src: "/hero-escuro.webp",
+              srcSet: "/hero-escuro.webp 1600w, /hero-escuro-2x.webp 2860w",
               y: 1.02,
-              className: "hidden dark:block",
+              className:
+                "hidden dark:block [mask-image:linear-gradient(to_bottom,transparent,#000_22%)]",
             },
           ] as const
         ).map((imagem) => (
