@@ -29,9 +29,29 @@ export function useReducedMotion() {
 }
 
 /**
+ * `true` enquanto o elemento está na tela. Diferente do `useInView` (que marca a primeira
+ * vez e para de observar), este volta a `false` quando o elemento sai, para a animação
+ * rodar de novo a cada vez que ele aparece. Recebe o elemento por estado, para servir
+ * também a refs de callback.
+ */
+export function useOnScreen(element: Element | null, threshold = 0.2) {
+  const [onScreen, setOnScreen] = React.useState(false);
+  React.useEffect(() => {
+    if (!element || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([entry]) => setOnScreen(Boolean(entry?.isIntersecting)), {
+      threshold,
+    });
+    io.observe(element);
+    return () => io.disconnect();
+  }, [element, threshold]);
+  return onScreen;
+}
+
+/**
  * Relógio da demo: `tick` avança a cada `interval` ms (0 … length-1, em laço).
  * Pausa com hover/foco (use `bind` no contêiner) e, depois de `takeControl()`, por `resumeAfter` ms.
- * Com movimento reduzido nunca anda: `playing` é sempre falso.
+ * Fora da tela ele para, e ao voltar recomeça do início: quem rola até a demo sempre a vê
+ * desde o primeiro passo. Com movimento reduzido nunca anda: `playing` é sempre falso.
  */
 export function useTicker({
   interval,
@@ -47,8 +67,15 @@ export function useTicker({
   const [hover, setHover] = React.useState(false);
   const [focus, setFocus] = React.useState(false);
   const [manual, setManual] = React.useState(0);
+  const [element, setElement] = React.useState<HTMLElement | null>(null);
+  const onScreen = useOnScreen(element);
 
-  const playing = !reduced && !hover && !focus && manual === 0;
+  // Ao entrar na tela, volta ao primeiro passo.
+  React.useEffect(() => {
+    if (onScreen) setTick(0);
+  }, [onScreen]);
+
+  const playing = !reduced && onScreen && !hover && !focus && manual === 0;
 
   React.useEffect(() => {
     if (!playing) return;
@@ -63,6 +90,7 @@ export function useTicker({
   }, [manual, resumeAfter]);
 
   const bind = {
+    ref: setElement,
     onPointerEnter: () => setHover(true),
     onPointerLeave: () => setHover(false),
     onFocus: () => setFocus(true),
@@ -77,23 +105,40 @@ export function useTicker({
   return { tick, setTick, playing, reduced, bind, takeControl };
 }
 
-/** Linha de cota com a medida: horizontal em cima, vertical à esquerda. */
+/**
+ * Linha de cota com a medida: horizontal em cima, vertical à esquerda. Como a `Cota`, ela se
+ * desenha do centro para as pontas cada vez que aparece na tela.
+ */
 export function Dimension({ label, vertical }: { label: string; vertical?: boolean }) {
+  const [element, setElement] = React.useState<HTMLSpanElement | null>(null);
+  const onScreen = useOnScreen(element);
+
   return (
     <span
+      ref={setElement}
       aria-hidden="true"
       className={cn(
         "pointer-events-none absolute flex items-center justify-center text-primary",
-        vertical
-          ? "inset-y-0 -left-3 w-2 flex-col border-y border-current"
-          : "inset-x-0 -top-3 h-2 border-x border-current",
+        vertical ? "inset-y-0 -left-3 w-2 flex-col" : "inset-x-0 -top-3 h-2",
       )}
     >
-      <span className={cn("absolute bg-current", vertical ? "inset-y-0 w-px" : "inset-x-0 h-px")} />
+      <span
+        className={cn(
+          "absolute inset-0 border-current",
+          vertical ? "border-y" : "border-x",
+          onScreen ? (vertical ? "animate-cota-y" : "animate-cota-x") : "opacity-0",
+        )}
+      >
+        <span
+          className={cn("absolute bg-current", vertical ? "inset-y-0 w-px" : "inset-x-0 h-px")}
+        />
+      </span>
       <span
         key={label}
+        style={{ animationDelay: "250ms" }}
         className={cn(
-          "absolute animate-showcase-in font-mono text-[10px] leading-none whitespace-nowrap tabular-nums",
+          "absolute font-mono text-[10px] leading-none whitespace-nowrap tabular-nums",
+          onScreen ? "animate-showcase-in" : "opacity-0",
           vertical ? "right-full mr-1.5" : "bottom-full mb-1.5",
         )}
       >
@@ -149,7 +194,8 @@ const COTA_LABEL = {
 
 /**
  * Colchete de cota que se desenha do centro para as pontas, com rótulo (número ou medida).
- * Posiciona-se no elemento medido (o pai precisa ser `relative`). Remonte com `key` para redesenhar.
+ * Posiciona-se no elemento medido (o pai precisa ser `relative`). Remonte com `key` para
+ * redesenhar. Só se desenha na tela, e de novo a cada vez que volta a aparecer.
  */
 export function Cota({
   side,
@@ -166,8 +212,12 @@ export function Cota({
   children?: React.ReactNode;
 }) {
   const horizontal = side === "top" || side === "bottom";
+  const [element, setElement] = React.useState<HTMLSpanElement | null>(null);
+  const onScreen = useOnScreen(element);
+
   return (
     <span
+      ref={setElement}
       aria-hidden="true"
       className={cn(
         "pointer-events-none absolute flex items-center justify-center transition-colors duration-300",
@@ -180,7 +230,8 @@ export function Cota({
         style={{ animationDelay: `${delay}ms` }}
         className={cn(
           "absolute inset-0 border-current",
-          horizontal ? "animate-cota-x border-x" : "animate-cota-y border-y",
+          horizontal ? "border-x" : "border-y",
+          onScreen ? (horizontal ? "animate-cota-x" : "animate-cota-y") : "opacity-0",
         )}
       >
         <span
@@ -196,7 +247,8 @@ export function Cota({
         <span
           style={{ animationDelay: `${delay + 250}ms` }}
           className={cn(
-            "absolute animate-showcase-in font-mono text-[10px] leading-none whitespace-nowrap tabular-nums",
+            "absolute font-mono text-[10px] leading-none whitespace-nowrap tabular-nums",
+            onScreen ? "animate-showcase-in" : "opacity-0",
             COTA_LABEL[side],
           )}
         >

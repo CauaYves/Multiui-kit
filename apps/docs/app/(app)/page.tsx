@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { Button } from "@multiclubes/ui/components/button";
-import Link from "next/link";
 import { ArrowUpRight } from "@phosphor-icons/react/dist/ssr";
+import Link from "next/link";
 import { BLOCKS } from "@/blocks";
 import { HomeAnatomy } from "@/components/home/home-anatomy";
 import { HomeCompare } from "@/components/home/home-compare";
@@ -66,17 +66,22 @@ export default function Page() {
             aplicações da Multiclubes.
           </p>
           <div className="flex items-center gap-2 pt-2 ">
-            <Button nativeButton={false} render={<Link href="/docs" className="pill gap-2 bg-ink text-paper hover:bg-ink/85 hover:text-paper"  />}>
+            <Button
+              nativeButton={false}
+              render={
+                <Link
+                  href="/docs"
+                  className="pill gap-2 bg-ink text-paper hover:bg-ink/85 hover:text-paper"
+                />
+              }
+            >
               Começar a usar
-
-
-                <ArrowUpRight className="size-4" aria-hidden="true" />
+              <ArrowUpRight className="size-4" aria-hidden="true" />
               {/* </Link> */}
             </Button>
             <Button variant="ghost" nativeButton={false} render={<Link href="/docs/components" />}>
               Ver componentes
-                {/* <ArrowUpRight className="size-4" aria-hidden="true" /> */}
-
+              {/* <ArrowUpRight className="size-4" aria-hidden="true" /> */}
             </Button>
           </div>
         </section>

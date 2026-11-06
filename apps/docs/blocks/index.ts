@@ -16,7 +16,6 @@ export const BLOCK_CATEGORIES = [
   { slug: "login", title: "Login" },
   { slug: "signup", title: "Signup" },
   { slug: "editor", title: "Editor" },
-  { slug: "canvas", title: "Canvas" },
 ];
 
 export const BLOCKS: Block[] = [
@@ -28,6 +27,12 @@ export const BLOCKS: Block[] = [
   {
     name: "sidebar-02",
     description: "Sidebar que recolhe para ícones, com a página encostada",
+    categories: ["featured", "sidebar"],
+  },
+  {
+    name: "sidebar-03",
+    description:
+      "Aside inset com seletor, grupos de rotas com contagens, grupo recolhível e painel à direita",
     categories: ["featured", "sidebar"],
   },
   {
@@ -45,19 +50,13 @@ export const BLOCKS: Block[] = [
     description: "Editor com sidebar de projetos, caixa de comandos e canvas de pontos",
     categories: ["featured", "editor"],
   },
-  {
-    name: "canvas-01",
-    description:
-      "Casca de app com canvas: header com marca, seletor e busca, painel lateral com abas e lista, resumo e ferramentas flutuantes",
-    categories: ["featured", "canvas"],
-  },
 ];
 
 export const BlockLoaders: Record<string, () => Promise<{ default: React.ComponentType }>> = {
   "sidebar-01": () => import("./sidebar-01"),
   "sidebar-02": () => import("./sidebar-02"),
+  "sidebar-03": () => import("./sidebar-03"),
   "login-01": () => import("./login-01"),
   "signup-01": () => import("./signup-01"),
   "editor-01": () => import("./editor-01"),
-  "canvas-01": () => import("./canvas-01"),
 };

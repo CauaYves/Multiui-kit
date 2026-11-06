@@ -453,6 +453,7 @@ function Shape() {
   const itemRef = React.useRef<HTMLSpanElement>(null);
   const [live, setLive] = React.useState<[number, number, number]>([0, 0, 0]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: o efeito lê o raio já aplicado no DOM, então precisa rodar de novo quando `radius` muda.
   React.useLayoutEffect(() => {
     const px = (el: Element | null) =>
       el ? Math.round(Number.parseFloat(getComputedStyle(el).borderTopLeftRadius) * 10) / 10 : 0;
