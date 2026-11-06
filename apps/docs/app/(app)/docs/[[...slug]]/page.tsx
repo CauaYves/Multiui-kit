@@ -2,9 +2,17 @@ import { Button } from "@multiclubes/ui/components/button";
 import { ArrowLeftIcon, ArrowRightIcon, ArrowSquareOutIcon } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ComponentPreview } from "@/components/component-preview";
+import { ComponentsGallery, type GalleryItem } from "@/components/components-gallery";
 import { DocsCopyPage } from "@/components/docs-copy-page";
 import { DocsTableOfContents } from "@/components/docs-toc";
-import { getAllSlugs, getNeighbours, getPage } from "@/lib/docs";
+import {
+  COMPONENT_CATEGORIES,
+  getComponentCategory,
+  NEW_COMPONENTS,
+} from "@/lib/component-categories";
+import { getComponentVariations } from "@/lib/component-variations";
+import { getAllSlugs, getComponentPages, getNeighbours, getPage } from "@/lib/docs";
 import { compileMdx } from "@/lib/mdx";
 
 export const dynamicParams = false;
@@ -25,8 +33,26 @@ export default async function Page({ params }: Props) {
   const page = getPage((await params).slug ?? []);
   if (!page) notFound();
 
+  if (page.url === "/docs/components") return <ComponentsPage brand={false} />;
+  if (page.url === "/docs/marca") return <ComponentsPage brand />;
+
   const neighbours = getNeighbours(page.url);
-  const { content, toc } = await compileMdx(page.body);
+  const { content, toc: pageToc } = await compileMdx(page.body);
+  // Variações do componente (lib/component-variations.ts): seção no fim da página, também
+  // nas páginas geradas do shadcn, e entradas no índice da página.
+  const variations =
+    page.slug[0] === "components" ? getComponentVariations(page.slug.at(-1) ?? "") : [];
+  const toc = variations.length
+    ? [
+        ...pageToc,
+        { title: "Variações", url: "#variacoes", depth: 2 },
+        ...variations.map((variation, index) => ({
+          title: variation.title,
+          url: `#variacao-${index + 1}`,
+          depth: 3,
+        })),
+      ]
+    : pageToc;
 
   return (
     <div
@@ -105,7 +131,22 @@ export default async function Page({ params }: Props) {
               </div>
             )}
           </div>
-          <div className="typeset w-full flex-1 pb-16 sm:pb-0">{content}</div>
+          <div className="typeset w-full flex-1 pb-16 sm:pb-0">
+            {content}
+            {variations.length > 0 && (
+              <>
+                <h2 id="variacoes">Variações</h2>
+                <p>Usos que se repetem entre as aplicações, montados com o próprio componente.</p>
+                {variations.map((variation, index) => (
+                  <section key={variation.example}>
+                    <h3 id={`variacao-${index + 1}`}>{variation.title}</h3>
+                    <p>{variation.description}</p>
+                    <ComponentPreview name={variation.example} previewClassName="h-auto" />
+                  </section>
+                ))}
+              </>
+            )}
+          </div>
           <div className="hidden h-16 w-full items-center gap-2 px-4 sm:flex sm:px-0">
             {neighbours.previous && (
               <Button
@@ -139,6 +180,51 @@ export default async function Page({ params }: Props) {
             <DocsTableOfContents toc={toc} />
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+/** /docs/components: galeria larga, com busca, filtros e prévias, no lugar do texto do MDX. */
+/**
+ * Galeria de componentes. `brand` separa os dois lados: /docs/marca mostra só os componentes
+ * de identidade (categoria "Marca") e /docs/components mostra todos os outros.
+ */
+function ComponentsPage({ brand }: { brand: boolean }) {
+  const pages = getComponentPages().filter(
+    (entry) => (getComponentCategory(entry.slug.at(-1) ?? "") === "Marca") === brand,
+  );
+  const items: GalleryItem[] = pages.map((entry) => {
+    const name = entry.slug.at(-1) ?? "";
+    return {
+      name,
+      title: entry.title,
+      description: entry.description,
+      url: entry.url,
+      category: getComponentCategory(name),
+      multiclubes: entry.multiclubes,
+      isNew: NEW_COMPONENTS.has(name),
+      variations: getComponentVariations(name).length,
+    };
+  });
+
+  return (
+    <div data-slot="docs" className="flex min-w-0 flex-1 flex-col pb-16">
+      <div className="h-(--top-spacing) shrink-0" />
+      <div className="w-full px-4 py-4 md:px-6">
+        <ComponentsGallery
+          items={items}
+          eyebrow={brand ? "Identidade" : "Componentes"}
+          title={brand ? "Marca" : "Componentes"}
+          description={
+            brand
+              ? "Componentes de identidade da Multiclubes, para campanhas, telas de entrada e seções de destaque."
+              : "Componentes do @multiclubes/ui. Busque pelo nome, filtre por categoria ou ordene para achar o que precisa."
+          }
+          categories={
+            brand ? ["Marca"] : [...COMPONENT_CATEGORIES.map((category) => category.name), "Outros"]
+          }
+        />
       </div>
     </div>
   );

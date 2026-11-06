@@ -1,0 +1,61 @@
+---
+title: Bottom Nav
+description: Barra de navegação flutuante em formato de pílula, só com ícones e um indicador que desliza até o item ativo.
+---
+
+<ComponentPreview name="bottom-nav-demo" />
+
+## Installation
+
+<Installation name="bottom-nav" />
+
+## Usage
+
+```tsx
+import { BottomNav, BottomNavItem } from "@multiclubes/ui/components/bottom-nav"
+import { HouseIcon, UserIcon } from "@phosphor-icons/react"
+```
+
+```tsx
+<BottomNav defaultValue="inicio" aria-label="Navegação principal">
+  <BottomNavItem value="inicio" label="Início" icon={<HouseIcon />} />
+  <BottomNavItem value="perfil" label="Perfil" icon={<UserIcon />} />
+</BottomNav>
+```
+
+## Como funciona
+
+- **Só ícones:** o `label` nunca aparece na barra. Ele vira o `aria-label` do botão e um tooltip ao passar o mouse ou focar.
+- **Indicador:** uma pílula mede o item ativo e desliza até ele com `transform` e `width`, usando a mola do Mosaico. Com movimento reduzido ligado, a troca é imediata.
+- **Teclado:** as setas, `Home` e `End` movem o foco entre os itens; `Enter` e `Espaço` selecionam.
+
+## Controlado
+
+<ComponentPreview name="bottom-nav-controlled" />
+
+## Fixo na tela
+
+Com `sticky`, a barra fica fixa no rodapé, centralizada e respeitando a área segura do aparelho.
+
+<ComponentPreview name="bottom-nav-sticky" />
+
+## API Reference
+
+### BottomNav
+
+| Prop | Tipo | Padrão | Descrição |
+| --- | --- | --- | --- |
+| `value` | `string` | — | Item ativo (controlado). |
+| `defaultValue` | `string` | — | Item ativo inicial. |
+| `onValueChange` | `(value: string) => void` | — | Chamado ao selecionar um item. |
+| `sticky` | `boolean` | `false` | Fixa a barra no rodapé da tela. |
+| `aria-label` | `string` | `"Navegação"` | Nome da navegação para leitores de tela. |
+
+### BottomNavItem
+
+| Prop | Tipo | Padrão | Descrição |
+| --- | --- | --- | --- |
+| `value` | `string` | — | Identificador do item. |
+| `icon` | `ReactElement \| ElementType` | — | Ícone do Phosphor. |
+| `label` | `string` | — | Nome para acessibilidade e tooltip. |
+| `badge` | `boolean \| number \| string` | — | `true` mostra um ponto; número ou texto mostra o valor. |

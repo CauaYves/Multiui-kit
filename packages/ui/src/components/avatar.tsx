@@ -3,6 +3,8 @@
 import { Avatar as AvatarPrimitive } from "@base-ui/react/avatar";
 import { cn } from "cn";
 import type * as React from "react";
+import { Seal } from "./seal";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./tooltip";
 
 function Avatar({
   className,
@@ -63,6 +65,41 @@ function AvatarBadge({ className, ...props }: React.ComponentProps<"span">) {
   );
 }
 
+// Selo de cliente Multiclubes verificado, no canto inferior direito do Avatar (~38% do tamanho,
+// acompanha as variantes de size) com aro na cor do fundo para se destacar da imagem.
+function AvatarVerified({
+  className,
+  label = "Cliente Multiclubes verificado",
+  tooltip = "Cliente Multiclubes",
+  ...props
+}: Omit<React.ComponentProps<typeof Seal>, "tone" | "label" | "children"> & {
+  label?: string;
+  /** Texto do tooltip. */
+  tooltip?: string;
+}) {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <Seal
+              tone="verified"
+              label={label}
+              data-slot="avatar-verified"
+              className={cn(
+                "absolute -right-[8%] -bottom-[8%] z-10 size-[38%] rounded-full bg-background ring-2 ring-background",
+                className,
+              )}
+              {...props}
+            />
+          }
+        />
+        <TooltipContent>{tooltip}</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
+
 function AvatarGroup({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -89,4 +126,12 @@ function AvatarGroupCount({ className, ...props }: React.ComponentProps<"div">) 
   );
 }
 
-export { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage };
+export {
+  Avatar,
+  AvatarBadge,
+  AvatarFallback,
+  AvatarGroup,
+  AvatarGroupCount,
+  AvatarImage,
+  AvatarVerified,
+};

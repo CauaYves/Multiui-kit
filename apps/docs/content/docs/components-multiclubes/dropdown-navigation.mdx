@@ -1,0 +1,79 @@
+---
+title: Dropdown Navigation
+description: Menu de navegação com painéis em colunas, destaque deslizante nos gatilhos e painel que se redimensiona entre itens.
+---
+
+<ComponentPreview name="dropdown-navigation-demo" />
+
+## Installation
+
+<Installation name="dropdown-navigation" />
+
+## Usage
+
+```tsx
+import { DropdownNavigation } from "@multiclubes/ui/components/dropdown-navigation"
+import { RocketLaunchIcon } from "@phosphor-icons/react"
+```
+
+```tsx
+<DropdownNavigation
+  aria-label="Principal"
+  items={[
+    {
+      label: "Produtos",
+      groups: [
+        {
+          title: "Plataforma",
+          items: [
+            {
+              label: "Prévias",
+              description: "Entregue mais rápido",
+              icon: <RocketLaunchIcon />,
+              href: "/previas",
+            },
+          ],
+        },
+      ],
+    },
+    { label: "Preços", href: "/precos" },
+  ]}
+/>
+```
+
+## Como funciona
+
+- **Base:** construído sobre o `NavigationMenu` (Base UI), então teclado, foco e `aria` já vêm prontos. Passar o mouse ou focar um gatilho abre o painel.
+- **Destaque:** uma pílula sutil mede o gatilho sob o cursor e desliza até ele com `transform` e `width`.
+- **Painel:** ao trocar de gatilho, o conteúdo faz fade e a superfície se redimensiona suavemente. Com movimento reduzido ligado, as trocas são imediatas.
+- **Ícones:** passe elementos do Phosphor em `icon`. Itens sem `groups` viram links simples.
+
+## Menus e links
+
+Misture gatilhos com painel e links diretos na mesma barra.
+
+<ComponentPreview name="dropdown-navigation-links" />
+
+## API Reference
+
+### DropdownNavigation
+
+| Prop | Tipo | Padrão | Descrição |
+| --- | --- | --- | --- |
+| `items` | `DropdownNavigationItem[]` | — | Itens de primeiro nível. |
+| `aria-label` | `string` | — | Nome da navegação para leitores de tela. |
+
+### DropdownNavigationItem
+
+| Prop | Tipo | Padrão | Descrição |
+| --- | --- | --- | --- |
+| `label` | `string` | — | Texto do gatilho ou do link. |
+| `href` | `string` | — | Destino quando não há `groups`. |
+| `groups` | `DropdownNavigationGroup[]` | — | Colunas do painel. |
+
+### DropdownNavigationGroup
+
+| Prop | Tipo | Padrão | Descrição |
+| --- | --- | --- | --- |
+| `title` | `string` | — | Título discreto da coluna. |
+| `items` | `{ label, description?, icon?, href }[]` | — | Entradas da coluna. |

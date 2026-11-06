@@ -1,0 +1,103 @@
+import { CheckIcon } from "@phosphor-icons/react/dist/ssr";
+import { cn } from "cn";
+import type * as React from "react";
+
+// Selo da Multiclubes: um emblema recortado em ondas que carimba uma marca como cliente. O
+// conteúdo (por padrão o "m" da marca; ou o logo do cliente) fica centrado num quadrado de ~54%
+// da largura. O tamanho vem do className (size-24 por padrão); SVG usa currentColor.
+
+/** Contorno do selo (viewBox "-5 -5 610 605"). */
+export const SEAL_PATH =
+  "M 193.890625 19.179688 C 207.609375 2.234375 230.859375 -3.929688 251.304688 3.957031 L 281.761719 15.710938 C 293.492188 20.234375 306.507812 20.234375 318.238281 15.710938 L 348.695312 3.957031 C 369.140625 -3.929688 392.390625 2.234375 406.109375 19.179688 L 426.550781 44.425781 C 434.421875 54.148438 445.695312 60.585938 458.136719 62.46875 L 490.457031 67.363281 C 512.148438 70.644531 529.167969 87.488281 532.484375 108.949219 L 537.429688 140.925781 C 539.332031 153.238281 545.839844 164.390625 555.664062 172.175781 L 581.183594 192.402344 C 598.308594 205.976562 604.492188 228.984375 596.566406 249.207031 L 584.6875 279.347656 C 580.117188 290.953125 580.117188 303.832031 584.6875 315.4375 L 596.566406 345.574219 C 604.492188 365.804688 598.308594 388.808594 581.183594 402.382812 L 555.664062 422.605469 C 545.839844 430.394531 539.332031 441.546875 537.429688 453.859375 L 532.484375 485.835938 C 529.167969 507.296875 512.148438 524.140625 490.457031 527.421875 L 458.136719 532.316406 C 445.695312 534.199219 434.421875 540.636719 426.550781 550.359375 L 406.109375 575.605469 C 392.390625 592.550781 369.140625 598.714844 348.695312 590.828125 L 318.238281 579.074219 C 306.507812 574.550781 293.492188 574.550781 281.761719 579.074219 L 251.304688 590.828125 C 230.859375 598.714844 207.609375 592.550781 193.890625 575.605469 L 173.449219 550.359375 C 165.578125 540.636719 154.304688 534.199219 141.863281 532.316406 L 109.542969 527.421875 C 87.851562 524.140625 70.832031 507.296875 67.515625 485.835938 L 62.570312 453.859375 C 60.667969 441.546875 54.160156 430.394531 44.335938 422.605469 L 18.816406 402.382812 C 1.691406 388.808594 -4.492188 365.804688 3.433594 345.574219 L 15.308594 315.4375 C 19.882812 303.832031 19.882812 290.953125 15.308594 279.347656 L 3.433594 249.207031 C -4.492188 228.984375 1.691406 205.976562 18.816406 192.402344 L 44.332031 172.175781 C 54.15625 164.390625 60.664062 153.238281 62.570312 140.925781 L 67.511719 108.949219 C 70.828125 87.488281 87.851562 70.644531 109.542969 67.363281 L 141.863281 62.46875 C 154.304688 60.585938 165.578125 54.148438 173.449219 44.425781 Z M 193.890625 19.179688";
+
+/** Símbolo da marca (o "m") em traço cheio, na caixa 175×128 que começa em y=15. */
+const MARK_PATH =
+  "M169.04,64.95c-3.38-13.53-8.17-24.49-14.24-32.57-8.52-11.36-19.85-17.36-32.76-17.36-11.2,0-23.29,5.09-34.82,14.51-11.53-9.42-23.62-14.51-34.82-14.51-12.92,0-24.25,6-32.76,17.36-6.06,8.08-10.85,19.04-14.24,32.57C1.54,80.38.36,95.64,0,103.63c-.14,3.11,2.35,5.71,5.46,5.71h10.56c2.93,0,5.34-2.3,5.47-5.22.96-22.04,7.7-67.6,30.9-67.6,5.65,0,12.6,3.04,19.62,8.41-15.19,18.72-24.29,41.65-23.66,60.6.81,24.47,20.17,37.27,38.87,37.27s38.06-12.8,38.87-37.27c.63-18.95-8.47-41.88-23.66-60.6,7.01-5.37,13.97-8.41,19.62-8.41,23.2,0,29.94,45.56,30.9,67.59.13,2.92,2.54,5.22,5.46,5.22h10.56c3.12,0,5.6-2.6,5.47-5.71-.36-8-1.53-23.25-5.39-38.68ZM104.58,104.83c-.4,12.15-9.6,16.47-17.36,16.47s-16.96-4.31-17.36-16.47c-.43-12.98,6.46-30.15,17.36-44.39,10.9,14.24,17.79,31.41,17.36,44.39Z";
+
+const TONES = {
+  // Selo escuro com conteúdo claro.
+  default: "text-foreground [--seal-content:var(--color-background)]",
+  // Azul da marca com amarelo; invertido no escuro, como o ícone da marca.
+  brand:
+    "text-[#0540c5] [--seal-content:#fee502] dark:text-[#fee502] dark:[--seal-content:#0540c5]",
+  // Selo claro com conteúdo escuro.
+  inverse: "text-background [--seal-content:var(--color-foreground)]",
+  // Cliente verificado: azul da marca no claro, preto com aro no escuro; check branco nos dois.
+  verified: "text-[#0a0a0a] [--seal-content:#fff]",
+} as const;
+
+function Seal({
+  children,
+  tone = "default",
+  label = "Selo",
+  className,
+  ...props
+}: React.ComponentProps<"div"> & {
+  /** Conteúdo centrado (logo do cliente: svg, img ou texto). Padrão: o "m" da marca. */
+  children?: React.ReactNode;
+  /** Combinação de cores do selo e do conteúdo. */
+  tone?: keyof typeof TONES;
+  /** Texto para leitores de tela. */
+  label?: string;
+}) {
+  const verified = tone === "verified";
+  return (
+    <div
+      role="img"
+      aria-label={label}
+      data-slot="seal"
+      className={cn("relative inline-block size-24 shrink-0", TONES[tone], className)}
+      {...props}
+    >
+      {verified ? (
+        <>
+          <svg
+            viewBox="-5 -5 610 605"
+            aria-hidden
+            className="absolute inset-0 size-full dark:hidden"
+          >
+            <path d={SEAL_PATH} fill="#0540c5" />
+          </svg>
+          <svg
+            viewBox="-5 -5 610 605"
+            fill="currentColor"
+            aria-hidden
+            className="absolute inset-0 hidden size-full dark:block"
+          >
+            <path
+              d={SEAL_PATH}
+              stroke="var(--color-foreground)"
+              strokeOpacity={0.15}
+              strokeWidth={14}
+              paintOrder="stroke"
+            />
+          </svg>
+        </>
+      ) : (
+        <svg
+          viewBox="-5 -5 610 605"
+          fill="currentColor"
+          aria-hidden
+          className="absolute inset-0 size-full"
+        >
+          <path d={SEAL_PATH} />
+        </svg>
+      )}
+      <div
+        data-slot="seal-content"
+        className="absolute top-1/2 left-1/2 flex aspect-square w-[54%] -translate-x-1/2 -translate-y-1/2 items-center justify-center overflow-hidden text-(--seal-content) [&_img]:size-full [&_img]:object-contain [&_svg]:max-h-full [&_svg]:max-w-full [&_svg]:fill-current"
+      >
+        {children ??
+          (verified ? (
+            <CheckIcon weight="bold" aria-hidden className="size-full" />
+          ) : (
+            <svg viewBox="0 15 175 128" aria-hidden className="w-full">
+              <path d={MARK_PATH} />
+            </svg>
+          ))}
+      </div>
+    </div>
+  );
+}
+
+export { Seal };

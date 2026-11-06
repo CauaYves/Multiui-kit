@@ -15,7 +15,6 @@ import {
 import { Skeleton } from "@multiclubes/ui/components/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@multiclubes/ui/components/tooltip";
 import { useIsMobile } from "@multiclubes/ui/hooks/use-mobile";
-import { SidebarIcon } from "@phosphor-icons/react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
 import * as React from "react";
@@ -243,8 +242,34 @@ function Sidebar({
   );
 }
 
+/**
+ * Ícone do SidebarTrigger: um painel lateral (como o SidebarSimple do Phosphor, no mesmo
+ * traço) com uma seta na área da página, que aponta para onde o aside vai: para a esquerda
+ * quando ele está aberto (recolher) e para a direita quando está fechado (expandir). A seta
+ * é desenhada já na direção certa, sem rotação por CSS: transform em elementos de SVG não se
+ * comporta igual em todos os navegadores.
+ */
+function SidebarToggleIcon({ open }: { open: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 256 256"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="16"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="32" y="48" width="192" height="160" rx="8" />
+      <line x1="88" y1="48" x2="88" y2="208" />
+      <polyline points={open ? "172,96 140,128 172,160" : "140,96 172,128 140,160"} />
+    </svg>
+  );
+}
+
 function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<typeof Button>) {
-  const { toggleSidebar } = useSidebar();
+  const { toggleSidebar, isMobile, open, openMobile } = useSidebar();
+  const expanded = isMobile ? openMobile : open;
 
   return (
     <Button
@@ -259,7 +284,7 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
       }}
       {...props}
     >
-      <SidebarIcon />
+      <SidebarToggleIcon open={expanded} />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );

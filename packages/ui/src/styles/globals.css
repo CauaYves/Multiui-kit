@@ -39,6 +39,7 @@
   --color-ring: var(--ring);
   --color-highlight: var(--highlight);
   --color-highlight-foreground: var(--highlight-foreground);
+  --color-chart-brand: var(--chart-brand);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -60,6 +61,9 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
+  /* Fonte de títulos e números em destaque (ver --heading-font no :root). */
+  --font-heading: var(--heading-font);
+
   /* Escala de arredondamento por nível de aninhamento (ver :root). */
   --radius-surface: var(--surface-radius);
   --radius-field: calc(var(--surface-radius) - var(--radius-step));
@@ -77,6 +81,8 @@
    */
   --surface-radius: calc(var(--radius) * 3.2);
   --radius-step: 0.5rem;
+  /* Por padrão os títulos usam a fonte do texto. O app troca definindo --heading-font. */
+  --heading-font: var(--font-sans);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -97,11 +103,14 @@
   --ring: oklch(0.55 0.19 263);
   --highlight: oklch(0.914 0.191 101.4);
   --highlight-foreground: oklch(0.205 0 0);
-  --chart-1: oklch(0.55 0.2 263);
-  --chart-2: oklch(0.85 0.18 101);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
+  --chart-brand: #0540c5;
+  /* Séries de gráfico: degraus da cor da marca, do mais forte ao mais claro. Opacos (misturados
+     com o fundo), para séries sobrepostas não somarem cor. Gráficos são monocromáticos. */
+  --chart-1: var(--chart-brand);
+  --chart-2: color-mix(in oklab, var(--chart-brand) 75%, var(--background));
+  --chart-3: color-mix(in oklab, var(--chart-brand) 55%, var(--background));
+  --chart-4: color-mix(in oklab, var(--chart-brand) 35%, var(--background));
+  --chart-5: color-mix(in oklab, var(--chart-brand) 20%, var(--background));
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.44 0.213 263);
@@ -133,11 +142,12 @@
   --ring: oklch(0.62 0.2 263);
   --highlight: oklch(0.914 0.191 101.4);
   --highlight-foreground: oklch(0.205 0 0);
-  --chart-1: oklch(0.62 0.2 263);
-  --chart-2: oklch(0.85 0.18 101);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
+  --chart-brand: #fee502;
+  --chart-1: var(--chart-brand);
+  --chart-2: color-mix(in oklab, var(--chart-brand) 75%, var(--background));
+  --chart-3: color-mix(in oklab, var(--chart-brand) 55%, var(--background));
+  --chart-4: color-mix(in oklab, var(--chart-brand) 35%, var(--background));
+  --chart-5: color-mix(in oklab, var(--chart-brand) 20%, var(--background));
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.62 0.2 263);
@@ -154,5 +164,303 @@
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;
+  }
+}
+
+/*
+ * Troca de tema (ThemeToggle): efeito "Circle" do react-theme-switch-animation. Durante
+ * a View Transition, o tema novo aparece num círculo que nasce no centro do botão
+ * (--theme-x, --theme-y) e cresce até cobrir a tela (--theme-size). A máscara é um
+ * gradiente circular (não precisa carregar imagem, então a animação começa na hora)
+ * animado por mask-size e mask-position, que o Safari também anima. data-theme-transition
+ * só existe enquanto a troca acontece, então outras View Transitions não são afetadas.
+ */
+html[data-theme-transition]::view-transition-old(root),
+html[data-theme-transition]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html[data-theme-transition]::view-transition-new(root) {
+  mask: radial-gradient(closest-side, #fff calc(100% - 1px), transparent) no-repeat;
+  animation: theme-reveal 750ms ease-in-out both;
+}
+
+@keyframes theme-reveal {
+  from {
+    mask-size: 0 0;
+    mask-position: var(--theme-x) var(--theme-y);
+  }
+  to {
+    mask-size: var(--theme-size) var(--theme-size);
+    mask-position: calc(var(--theme-x) - var(--theme-size) / 2)
+      calc(var(--theme-y) - var(--theme-size) / 2);
+  }
+}
+
+/*
+ * Ícone do ThemeToggle: o que aparece entra girando e crescendo, com um leve passo além
+ * do tamanho final, e sai do desfoque, como os ícones de sistema da Apple. Só roda durante
+ * a troca (data-theme-transition), então não anima ao carregar a página.
+ */
+@keyframes theme-icon-sun {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+    transform: rotate(-120deg) scale(0.4);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: rotate(0) scale(1);
+  }
+}
+
+@keyframes theme-icon-moon {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+    transform: rotate(70deg) translateY(30%) scale(0.4);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: rotate(0) translateY(0) scale(1);
+  }
+}
+
+/*
+ * BrandLoader: o "m" se desenha (stroke-dashoffset sobre pathLength="1") e os pontos quicam
+ * em sequência. Com movimento reduzido, o "m" aparece pronto e os pontos ficam parados.
+ */
+@keyframes brand-loader-draw {
+  from {
+    stroke-dashoffset: 1;
+    opacity: 0;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+/* Versão em laço: desenha, segura o "m" pronto e apaga, para recomeçar. */
+@keyframes brand-loader-draw-loop {
+  0% {
+    stroke-dashoffset: 1;
+    opacity: 0;
+  }
+  55%,
+  85% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+
+@keyframes brand-loader-dot {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.2);
+  }
+}
+
+/*
+ * MosaicLoader: cada peça da grade pulsa (some e volta ao tamanho cheio); o atraso escalonado
+ * em diagonal, definido em cada peça, faz a onda atravessar a imagem. Com movimento reduzido,
+ * as peças ficam paradas e inteiras.
+ */
+@keyframes mosaic-loader-pulse {
+  0%,
+  100% {
+    opacity: 0.28;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* zera a borda branca que o Recharts põe nas fatias. a exceção é a cápsula do donut:
+   lá a fatia É o stroke (ver components/chart-donut.tsx) */
+.recharts-pie-sector path:not(.donut-capsula) {
+  stroke: none;
+}
+
+/*
+ * Transições fluidas. Inspiradas nas transições do Liquid Glass da Apple: o elemento chega
+ * de forma orgânica, um pouco menor e levemente desfocado, e assenta nítido com uma mola
+ * suave (sobe cerca de 2% além do final e volta). Nunca parte de scale(0).
+ *
+ *   --ease-fluid        mola em linear(); use para ENTRADAS
+ *   --ease-out-fluid    ease-out forte, sem sobra; use para SAÍDAS
+ *   --duration-fluid    entrada de bloco/página
+ *   --duration-fluid-fast  entrada de UI pequena (popover, linha de lista)
+ *   --fluid-stagger     intervalo entre irmãos (classe fluid-stagger)
+ *
+ * Classes: animate-fluid-in, animate-fluid-in-sm, animate-fluid-morph, fluid-stagger.
+ * Com prefers-reduced-motion o conteúdo só aparece, sem animação.
+ */
+:root {
+  --ease-fluid: cubic-bezier(0.34, 1.3, 0.5, 1);
+  --ease-out-fluid: cubic-bezier(0.23, 1, 0.32, 1);
+  --duration-fluid: 560ms;
+  --duration-fluid-fast: 320ms;
+  --fluid-stagger: 45ms;
+}
+
+@supports (transition-timing-function: linear(0, 1)) {
+  :root {
+    --ease-fluid: linear(
+      0,
+      0.119,
+      0.35,
+      0.58,
+      0.763,
+      0.887,
+      0.962,
+      1.001,
+      1.017,
+      1.02,
+      1.017,
+      1.012,
+      1.008,
+      1.004,
+      1.002,
+      1.001,
+      1
+    );
+  }
+}
+
+@keyframes fluid-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.965);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+@keyframes fluid-in-up-sm {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.985);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+/* estica ao chegar: levemente achatado e alto, assenta em 1 (sensação de squash e stretch) */
+@keyframes fluid-morph {
+  from {
+    opacity: 0;
+    transform: scale(0.98, 1.03);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+@utility animate-fluid-in {
+  animation: fluid-in var(--duration-fluid) var(--ease-fluid) backwards;
+  animation-delay: calc(var(--fluid-index, 0) * var(--fluid-stagger));
+}
+
+@utility animate-fluid-in-sm {
+  animation: fluid-in-up-sm var(--duration-fluid-fast) var(--ease-fluid) backwards;
+  animation-delay: calc(var(--fluid-index, 0) * var(--fluid-stagger));
+}
+
+@utility animate-fluid-morph {
+  animation: fluid-morph var(--duration-fluid) var(--ease-fluid) backwards;
+  animation-delay: calc(var(--fluid-index, 0) * var(--fluid-stagger));
+}
+
+/* escalona os filhos diretos: cada um recebe --fluid-index (1 a 16; do 17 em diante, sem atraso extra) */
+@utility fluid-stagger {
+  & > * {
+    --fluid-index: 16;
+  }
+  @supports (animation-delay: calc(sibling-index() * 1ms)) {
+    & > * {
+      --fluid-index: min(calc(sibling-index() - 1), 16);
+    }
+  }
+  @supports not (animation-delay: calc(sibling-index() * 1ms)) {
+    & > :nth-child(1) {
+      --fluid-index: 0;
+    }
+    & > :nth-child(2) {
+      --fluid-index: 1;
+    }
+    & > :nth-child(3) {
+      --fluid-index: 2;
+    }
+    & > :nth-child(4) {
+      --fluid-index: 3;
+    }
+    & > :nth-child(5) {
+      --fluid-index: 4;
+    }
+    & > :nth-child(6) {
+      --fluid-index: 5;
+    }
+    & > :nth-child(7) {
+      --fluid-index: 6;
+    }
+    & > :nth-child(8) {
+      --fluid-index: 7;
+    }
+    & > :nth-child(9) {
+      --fluid-index: 8;
+    }
+    & > :nth-child(10) {
+      --fluid-index: 9;
+    }
+    & > :nth-child(11) {
+      --fluid-index: 10;
+    }
+    & > :nth-child(12) {
+      --fluid-index: 11;
+    }
+    & > :nth-child(13) {
+      --fluid-index: 12;
+    }
+    & > :nth-child(14) {
+      --fluid-index: 13;
+    }
+    & > :nth-child(15) {
+      --fluid-index: 14;
+    }
+    & > :nth-child(16) {
+      --fluid-index: 15;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fluid-in,
+  .animate-fluid-in-sm,
+  .animate-fluid-morph {
+    animation: none;
   }
 }

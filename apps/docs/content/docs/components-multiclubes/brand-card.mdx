@@ -1,0 +1,56 @@
+---
+title: Brand Card
+description: Cartão de destaque com traços fluidos nas cores da marca, para campanhas e chamadas.
+---
+
+<ComponentPreview name="brand-card-demo" />
+
+## Installation
+
+<Installation name="brand-card" />
+
+## Usage
+
+```tsx
+import { BrandCard, BrandCardContent } from "@multiclubes/ui/components/brand-card"
+```
+
+```tsx
+<BrandCard>
+  <BrandCardContent className="items-end justify-end text-right">
+    <h3>Título de destaque</h3>
+  </BrandCardContent>
+</BrandCard>
+```
+
+## Como funciona
+
+- **Traços da marca:** traços grossos e fluidos que lembram o laço do "m" da logo. Cada traço entra por uma borda perto de um canto e sai pela borda vizinha, então nenhuma ponta fica à mostra.
+- **Canto livre para o conteúdo:** os traços ficam longe do lado do conteúdo. Os que ficam acima do título sobem só o necessário para não cobri-lo.
+- **Escala com o cartão:** o desenho acompanha o tamanho do cartão. Em proporções muito diferentes de 16:9, as bordas recortam mais ou menos dos traços.
+
+## Lado do conteúdo
+
+Com `side="start"`, o mesmo desenho é espelhado e o canto livre passa a ser o inferior esquerdo. Alinhe o `BrandCardContent` do mesmo lado.
+
+<ComponentPreview name="brand-card-side" />
+
+## Desenho (seed)
+
+O desenho dos traços vem de um sorteio com semente. O mesmo `seed` sempre gera o mesmo desenho, no servidor e no navegador. Os desenhos aprovados pelo design são o `3`, que é o padrão, e o `5`. Use outros números só depois de conferir o resultado.
+
+<ComponentPreview name="brand-card-seeds" />
+
+## Variantes
+
+<ComponentPreview name="brand-card-variants" />
+
+As cores dos traços vêm de `--brand-card-mark-1`, `--brand-card-mark-2` e `--brand-card-mark-3`. Cada variante define as três; troque por cartão com `className` (`[--brand-card-mark-2:var(--color-chart-3)]`).
+
+## API Reference
+
+| Prop | Tipo | Padrão | Descrição |
+| --- | --- | --- | --- |
+| `variant` | `"highlight" \| "primary" \| "card"` | `"highlight"` | Fundo do cartão e cores dos traços. |
+| `side` | `"start" \| "end"` | `"end"` | Lado do conteúdo. Os traços ficam do outro lado. |
+| `seed` | `number` | `3` | Semente do desenho dos traços. |

@@ -23,7 +23,9 @@ async function readSource({ kit, src, demo }: { kit?: string; src?: string; demo
     if (demo) {
       const read = (dir: string) =>
         readFile(/* turbopackIgnore: true */ join(process.cwd(), dir, `${demo}.tsx`), "utf8");
-      return await read("examples").catch(() => read("examples-multiclubes"));
+      return await read("examples")
+        .catch(() => read("examples-multiclubes"))
+        .catch(() => read("blocks"));
     }
   } catch {}
   return null;

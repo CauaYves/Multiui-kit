@@ -24,8 +24,7 @@ links:
 
 ```tsx showLineNumbers
 <Avatar>
-  <AvatarImage src="/avatars/multiclubes.svg" />
-  <AvatarFallback>CN</AvatarFallback>
+  <AvatarFallback>AB</AvatarFallback>
 </Avatar>
 ```
 
@@ -63,7 +62,7 @@ A basic avatar component with an image and a fallback.
 
 ## Badge
 
-Use the `AvatarBadge` component to add a badge to the avatar. The badge is positioned at the bottom right of the avatar.
+Use the `AvatarVerified` component to add the verified seal to the avatar. It is positioned at the bottom right of the avatar.
 
 <ComponentPreview name="avatar-badge" />
 
@@ -71,9 +70,8 @@ Use the `className` prop to add custom styles to the badge such as custom colors
 
 ```tsx showLineNumbers
 <Avatar>
-  <AvatarImage src="/avatars/multiclubes.svg" alt="@multiclubes" />
-  <AvatarFallback>CN</AvatarFallback>
-  <AvatarBadge className="bg-green-600 dark:bg-green-800" />
+  <AvatarFallback>AB</AvatarFallback>
+  <AvatarVerified />
 </Avatar>
 ```
 

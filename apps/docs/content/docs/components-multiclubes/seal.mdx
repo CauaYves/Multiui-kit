@@ -1,0 +1,53 @@
+---
+title: Seal
+description: Selo da Multiclubes para carimbar uma marca como cliente, com o "m" ou o logo do cliente no centro.
+---
+
+<ComponentPreview name="seal-demo" />
+
+## Installation
+
+<Installation name="seal" />
+
+## Usage
+
+```tsx
+import { Seal } from "@multiclubes/ui/components/seal"
+```
+
+```tsx
+<Seal />
+```
+
+## Tons
+
+`default` usa o selo escuro com conteúdo claro, `brand` o azul da marca com amarelo (invertido no escuro) e `inverse` o selo claro, para fundos escuros. O tom `verified` marca o cliente verificado (veja abaixo).
+
+<ComponentPreview name="seal-tones" />
+
+## Selo de cliente
+
+Passe o logo do cliente como `children`: um `<svg>`, uma `<img>` ou texto. O conteúdo fica num quadrado central de cerca de 54% da largura do selo; imagens se ajustam sem cortar e SVGs usam `currentColor`. O tamanho vem do `className`.
+
+<ComponentPreview name="seal-client" />
+
+## Verificado
+
+`tone="verified"` mostra o selo com um check: azul da marca no tema claro e preto com aro sutil no escuro. Sem `children`, o conteúdo é o check.
+
+<ComponentPreview name="seal-verified" />
+
+No Avatar, use `AvatarVerified` para posicionar o selo no canto inferior direito, com tooltip "Cliente Multiclubes".
+
+<ComponentPreview name="avatar-verified" />
+
+## API Reference
+
+| Prop | Tipo | Padrão | Descrição |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | o "m" da marca | Conteúdo centrado (logo do cliente). |
+| `tone` | `"default" \| "brand" \| "inverse" \| "verified"` | `"default"` | Cores do selo e do conteúdo. |
+| `label` | `string` | `"Selo"` | Texto para leitores de tela. |
+| `className` | `string` | `size-24` | Tamanho e ajustes do selo. |
+
+O contorno também é exportado como `SEAL_PATH`.
